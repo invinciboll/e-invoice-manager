@@ -3,16 +3,21 @@ package com.invinciboll;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.saxon.s9api.XdmNode;
+import java.util.UUID;
 
 
 
 public class Invoice {
     @Getter @Setter
     private FileFormat fileFormat;
+    private String originalFileName;
+    private Path inputPath;
+    private Path outputPath;
     @Getter
     private XdmNode xmlContent;
     private XdmNode xrContent;
@@ -21,7 +26,9 @@ public class Invoice {
     private XMLFormat xmlFormat;
     private KeyInformation keyInformation;
 
-    public Invoice(Path inputPath) {
+    public Invoice(Path inputPath, String originalFileName) {
+        this.inputPath = inputPath;
+        this.originalFileName = originalFileName;
         try {
             fileFormat = FormatDetector.detectFileFormat(inputPath);
         } catch (Exception e) {
@@ -73,23 +80,37 @@ public class Invoice {
         }
 
         try {
-            // Create dir for sellerName if not exists
-            String outputDir = AppConfig.getInstance().getProperty("output.dir");
-            Path dirPath = Path.of(outputDir, keyInformation.sellerName());
-
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath); // Creates the directory and any necessary parent directories
-            }
-
-            Path outputPath = dirPath.resolve(keyInformation.billingRefNumber() + ".pdf");
+            String outputDir = AppConfig.getInstance().getProperty("tempfiles.dir");
+            outputPath = Paths.get(outputDir).resolve(UUID.randomUUID().toString() + ".pdf");
             XRechnungTransformer.renderPDF(foContent, outputPath.toString());
-            System.out.println("PDF generated successfully");
         } catch (Exception e) {
             System.err.println("Error generating PDF: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    public void save() {
+        try {
+            // Creates the directory and any necessary parent directories
+            String outputDir = AppConfig.getInstance().getProperty("output.dir");
+            Path dirPath = Path.of(outputDir, keyInformation.sellerName());
+            if (!Files.exists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
+
+            // Copy temp files to the output directory
+            String pdfFileName = keyInformation.billingRefNumber() + ".pdf";
+            String invoiceFileName = "original_" + keyInformation.billingRefNumber() + originalFileName.substring(originalFileName.lastIndexOf("."));
+
+            Files.copy(outputPath, dirPath.resolve(pdfFileName));
+            Files.copy(inputPath, dirPath.resolve(invoiceFileName));
+
+        } catch (Exception e) {
+            System.err.println("Error getting output directory: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public String toString() {

@@ -1,6 +1,10 @@
 .vscode/
 
 backend/output
+backend/tempfiles
+backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
+backend/target/maven-status/maven-compiler-plugin/compile/default-compile
+
 xrechnung-visualization/
 
 ZF232_EN.ZIP
