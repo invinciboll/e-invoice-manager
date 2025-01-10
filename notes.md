@@ -9,6 +9,8 @@
    1. Dowload binary from website
    2.  z
 
+!!! Adaptions to xr-pdf.xsl
+
 
 # Requirements
 - xrechnung / zugferd input
