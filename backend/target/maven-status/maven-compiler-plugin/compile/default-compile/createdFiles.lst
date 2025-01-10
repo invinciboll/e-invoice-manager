@@ -1,0 +1,9 @@
+com\invinciboll\FormatDetector.class
+com\invinciboll\Invoice.class
+com\invinciboll\XMLFormat.class
+com\invinciboll\XRechnungTransformer.class
+com\invinciboll\AppConfig.class
+com\invinciboll\FileFormat.class
+com\invinciboll\KeyInformation.class
+com\invinciboll\ServerApplication.class
+com\invinciboll\XRechnungTransformer$1.class

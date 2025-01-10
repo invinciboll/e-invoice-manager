@@ -83,6 +83,7 @@ public class Invoice {
 
             Path outputPath = dirPath.resolve(keyInformation.billingRefNumber() + ".pdf");
             XRechnungTransformer.renderPDF(foContent, outputPath.toString());
+            System.out.println("PDF generated successfully");
         } catch (Exception e) {
             System.err.println("Error generating PDF: " + e.getMessage());
             e.printStackTrace();
