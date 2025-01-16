@@ -13,11 +13,13 @@ import java.util.UUID;
 
 
 public class Invoice {
-    @Getter @Setter
+    @Getter
     private FileFormat fileFormat;
     private String originalFileName;
     private Path inputPath;
     private Path outputPath;
+    @Getter
+    private Path tempPdfFilePath;
     @Getter
     private XdmNode xmlContent;
     private XdmNode xrContent;
@@ -25,8 +27,11 @@ public class Invoice {
     @Getter @Setter
     private XMLFormat xmlFormat;
     private KeyInformation keyInformation;
+    @Getter
+    private String invoiceId; 
 
     public Invoice(Path inputPath, String originalFileName) {
+        this.invoiceId = UUID.randomUUID().toString();
         this.inputPath = inputPath;
         this.originalFileName = originalFileName;
         try {
@@ -81,8 +86,8 @@ public class Invoice {
 
         try {
             String outputDir = AppConfig.getInstance().getProperty("tempfiles.dir");
-            outputPath = Paths.get(outputDir).resolve(UUID.randomUUID().toString() + ".pdf");
-            XRechnungTransformer.renderPDF(foContent, outputPath.toString());
+            tempPdfFilePath = Paths.get(outputDir).resolve(UUID.randomUUID().toString() + ".pdf");
+            XRechnungTransformer.renderPDF(foContent, tempPdfFilePath.toString());
         } catch (Exception e) {
             System.err.println("Error generating PDF: " + e.getMessage());
             e.printStackTrace();
