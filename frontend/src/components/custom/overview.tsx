@@ -12,9 +12,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
 
   // Add state to track if file is printed and saved
   const [isPrinting, setIsPrinting] = React.useState<Progress>("NOT_STARTED");
-  const [isSaving, setIsSaving] = React.useState<Progress>("NOT_STARTED");
-
-
+  const [isSaving, setIsSaving] = React.useState<Progress>(fileInfo.alreadyExists ? "DONE" : "NOT_STARTED");
 
   function isElectronicInvoice(): boolean {
     return fileInfo.inputFormat === "ZF_PDF" || fileInfo.inputFormat === "XML";
@@ -97,6 +95,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
           </tr>
         </tbody>
       </table>
+      {fileInfo.alreadyExists && <div> The file already exists in the system.</div>}
       <div className="flex space-x-4">
         <Button 
           onClick={handlePrint} 

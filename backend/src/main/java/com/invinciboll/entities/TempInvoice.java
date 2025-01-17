@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.mustangproject.Invoice;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.FormatDetector;
@@ -16,6 +17,7 @@ import com.invinciboll.KeyInformation;
 import com.invinciboll.NetworkPrinter;
 import com.invinciboll.XRechnungTransformer;
 import com.invinciboll.configuration.AppConfig;
+import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 
@@ -146,40 +148,57 @@ public class TempInvoice {
         }
     }
 
-    public Map<String, Object> prepareJSONResponse() {
+    private boolean checkIfInvoiceExists(InvoiceDao invoiceDao) {
+        return invoiceDao.existsBySellerNameAndInvoiceReference(keyInformation.sellerName(), keyInformation.invoiceReference());
+    }
+
+    public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
         Map<String, Object> response = new HashMap<>();
         response.put("fileUrl", "http://localhost:4711/" + "tempfiles/" + tempGenerateFileName);
         response.put("invoiceId", invoiceId);
         response.put("fileFormat", fileFormat.toString());
         response.put("xmlFormat", xmlFormat.toString());
         response.put("keyInformation", keyInformation);
+        response.put("alreadyExists", checkIfInvoiceExists(invoiceDao));
 
         return response;
     }
 
-    public void persist() {
+    public void persist(InvoiceDao invoiceDao) {
         // Copy to output dir
+        String outputDir = AppConfig.getInstance().getProperty("output.dir");
+        Path dirPath = Path.of(outputDir, keyInformation.sellerName());
+        
+        String generatedFileName = keyInformation.invoiceReference() + ".pdf";
+        String originalFileName = "original_" + keyInformation.invoiceReference() + originalFileExtension;
+        
+        Path generatedFileOutputPath = dirPath.resolve(generatedFileName);
+        Path originalFileOutputPath = dirPath.resolve(originalFileName);
+
         try {
             // Creates the directory and any necessary parent directories
-            String outputDir = AppConfig.getInstance().getProperty("output.dir");
-            Path dirPath = Path.of(outputDir, keyInformation.sellerName());
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
-
             // Copy temp files to the output directory
-            String generatedFileName = keyInformation.invoiceReference() + ".pdf";
-            String originalFileName = "original_" + keyInformation.invoiceReference() + originalFileExtension;
-
-            Files.copy(tempGeneratedFilePath, dirPath.resolve(generatedFileName));
-            Files.copy(tempOriginalFilePath, dirPath.resolve(originalFileName));
-
+            Files.copy(tempGeneratedFilePath, generatedFileOutputPath);
+            Files.copy(tempOriginalFilePath, originalFileOutputPath);
         } catch (Exception e) {
             System.err.println("Error getting output directory: " + e.getMessage());
             e.printStackTrace();
         }
 
-        // TODO: Persist in database as InvoiceEntity
+        // Convert Te   mpInvoice to InvoiceEntity
+        InvoiceEntity invoiceEntity = new InvoiceEntity(this, originalFileOutputPath, generatedFileOutputPath);
+
+        // Persist to database using DAO
+        try {
+            invoiceDao.save(invoiceEntity);
+            System.out.println("Invoice persisted successfully: " + invoiceEntity.getInvoiceId());
+        } catch (Exception e) {
+            System.err.println("Error saving invoice to database: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void print() {

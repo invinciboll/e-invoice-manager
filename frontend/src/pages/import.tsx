@@ -12,7 +12,7 @@ const Import = () => {
     setFileInfo(info);
   };
   return (
-    <div className="w-[70%] flex flex-col items-center h-full bg-gray-100">
+    <div className="w-full h-screen flex items-center justify-center bg-gray-100">
       {!fileInfo ? (
         <FileUpload onUpload={handleFileUpload} />
       ) : (
@@ -27,8 +27,6 @@ const Import = () => {
       )}
     </div>
   );
-  
-  
 };
 
 export default Import;

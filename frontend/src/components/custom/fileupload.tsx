@@ -73,14 +73,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 
       if (response.ok) {
         const jsonResponse = await response.json(); // Expecting JSON with `pdfUrl` and `fileId`
-        const { fileUrl, invoiceId, fileFormat, xmlFormat, keyInformation } = jsonResponse;
+        const { fileUrl, invoiceId, fileFormat, xmlFormat, keyInformation, alreadyExists } = jsonResponse;
         
         const fileInfo: FileInfo = {
             url: fileUrl,
             id: invoiceId,
             inputFormat: fileFormat,
             technicalStandard: xmlFormat,
-            keyInformation
+            keyInformation,
+            alreadyExists
         }
         console.log(fileInfo);
         setUploadStatus("File uploaded and processed successfully!");

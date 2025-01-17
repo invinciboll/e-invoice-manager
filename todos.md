@@ -11,8 +11,17 @@ Do not expose publicly because:
 
 # Todo backend
 - Refactor config and constants
+- Improve error handling and propagation to front end
+- Remove temp files too
+- implement validation step
+- Detect duplicate files
 
 # Todo frontend
+- add finish/ clear button
+- clear when click on import
+- improve import page styling (also use auto scroll)
+- add validation section with either green or error or warning
+
 
 Environment vars:
 - Backend

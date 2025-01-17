@@ -3,6 +3,7 @@ package com.invinciboll.controller;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,12 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.TempInvoiceCache;
+import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.TempInvoice;
 import com.invinciboll.enums.ErrorCode;
 
 @RestController
 public class FileController {
     private static final TempInvoiceCache cache = new TempInvoiceCache();
+    private final InvoiceDao invoiceDao;
+
+    @Autowired
+    public FileController(InvoiceDao invoiceDao) {
+        this.invoiceDao = invoiceDao;
+    }
 
     @PostMapping("/upload") 
     public ResponseEntity<?> handleFileUpload( 
@@ -48,7 +56,7 @@ public class FileController {
 
         cache.put(temporaryInvoice);
 
-        Map<String, Object> responseBody = temporaryInvoice.prepareJSONResponse();   
+        Map<String, Object> responseBody = temporaryInvoice.prepareJSONResponse(invoiceDao);   
         return ResponseEntity.ok(responseBody);
     }
 
@@ -61,7 +69,7 @@ public class FileController {
                     .body(ErrorCode.ERR002.getMessage()); // Invoice not found
         }
 
-        invoice.persist();
+        invoice.persist(invoiceDao);
 
         return ResponseEntity.ok().build();
     }

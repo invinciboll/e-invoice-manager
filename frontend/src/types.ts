@@ -17,6 +17,7 @@ export type FileInfo = {
     id: string,
     inputFormat: InputFileFormat, 
     technicalStandard: TechnicalStandard,
-    keyInformation: KeyInformation
+    keyInformation: KeyInformation,
+    alreadyExists: boolean
 }
   
