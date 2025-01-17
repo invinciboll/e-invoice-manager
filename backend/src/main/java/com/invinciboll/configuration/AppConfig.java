@@ -1,4 +1,4 @@
-package com.invinciboll;
+package com.invinciboll.configuration;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -17,6 +17,7 @@ public class AppConfig {
         }
     }
 
+    // Initialize AppConfig with a specific file name
     public static AppConfig getInstance(String fileName) throws Exception {
         if (instance == null) {
             synchronized (AppConfig.class) { // Ensure thread safety
@@ -28,7 +29,8 @@ public class AppConfig {
         return instance;
     }
 
-    public static AppConfig getInstance() throws Exception {
+    // Retrieve AppConfig instance when already initialized
+    public static AppConfig getInstance() {
         if (instance == null) {
             throw new IllegalStateException("AppConfig is not initialized. Call getInstance(String fileName) first.");
         }
@@ -37,5 +39,14 @@ public class AppConfig {
 
     public String getProperty(String key) {
         return properties.getProperty(key);
+    }
+
+    // Retrieve a property by key with a default value
+    public String getProperty(String key, String defaultValue) {
+        try {
+            return properties.getProperty(key, defaultValue); // Uses the Properties API default
+        } catch (Exception e) {
+            return defaultValue; // Fallback to the provided default value
+        }
     }
 }

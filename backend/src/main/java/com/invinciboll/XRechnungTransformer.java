@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
@@ -16,6 +18,11 @@ import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
+
+import com.invinciboll.enums.FileFormat;
+import com.invinciboll.enums.XMLFormat;
+import com.invinciboll.configuration.AppConfig;
+
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -100,24 +107,48 @@ public class XRechnungTransformer {
 
         // XPath expressions for Seller Name and Invoice Number
         String sellerNameXPath = "//xr:Seller_name";
-        String invoiceNumberXPath = "//xr:invoice/xr:Invoice_number";
+        String invoiceReferenceXPath = "//xr:invoice/xr:Invoice_number";
+        String invoiceTypeCodeXPath = "//xr:invoice/xr:Invoice_type_code";
+        String issuedDateXPath = "//xr:invoice/xr:Invoice_issue_date";
+        String totalSumXPath = "//xr:Invoice_total_amount_with_VAT";
 
         String sellerName = "Not Found";
-        String invoiceNumber = "Not Found";
-
+        String invoiceReference = "Not Found";
+        Integer invoiceTypeCode = -1; // Use `null` to indicate no value
+        LocalDate issuedDate = LocalDate.MIN; // Represents the smallest possible LocalDate
+        BigDecimal totalSum = BigDecimal.valueOf(-1); // Placeholder value indicating invalid
         try {
-            sellerName = extractValue(xpathCompiler, xrContent, sellerNameXPath);
-            invoiceNumber = extractValue(xpathCompiler, xrContent, invoiceNumberXPath);
+            sellerName = extractStringValue(xpathCompiler, xrContent, sellerNameXPath);
+            invoiceReference = extractStringValue(xpathCompiler, xrContent, invoiceReferenceXPath);
+            invoiceTypeCode = extractIntegerValue(xpathCompiler, xrContent, invoiceTypeCodeXPath);
+            issuedDate = extractLocalDateValue(xpathCompiler, xrContent, issuedDateXPath);
+            totalSum = extractBigDecimalValue(xpathCompiler, xrContent, totalSumXPath);
         } catch (SaxonApiException e) {
             e.printStackTrace();
         }
-
-        return new KeyInformation(invoiceNumber, sellerName);
+        KeyInformation keyInformation = new KeyInformation(invoiceReference, sellerName, invoiceTypeCode, issuedDate, totalSum);
+        System.out.println(keyInformation.toString());
+        return keyInformation;
     }
 
-    private static String extractValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
+    public static String extractStringValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
         XdmValue result = xpathCompiler.evaluate(expression, xrContent);
-        return result.size() > 0 ? result.itemAt(0).getStringValue() : "Not Found";
+        return result.size() > 0 ? result.itemAt(0).getStringValue() : null;
+    }
+
+    public static Integer extractIntegerValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
+        String value = extractStringValue(xpathCompiler, xrContent, expression);
+        return value != null && !value.isEmpty() ? Integer.parseInt(value) : Integer.MIN_VALUE;
+    }
+
+    public static LocalDate extractLocalDateValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
+        String value = extractStringValue(xpathCompiler, xrContent, expression);
+        return value != null && !value.isEmpty() ? LocalDate.parse(value) : LocalDate.MIN;
+    }
+
+    public static BigDecimal extractBigDecimalValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
+        String value = extractStringValue(xpathCompiler, xrContent, expression);
+        return value != null && !value.isEmpty() ? new BigDecimal(value) : BigDecimal.valueOf(-1);
     }
 
 

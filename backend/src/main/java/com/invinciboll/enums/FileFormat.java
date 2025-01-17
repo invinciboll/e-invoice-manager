@@ -1,4 +1,4 @@
-package com.invinciboll;
+package com.invinciboll.enums;
 
 public enum FileFormat {
     XML,

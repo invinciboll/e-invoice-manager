@@ -6,6 +6,9 @@ import java.nio.file.Path;
 
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 
+import com.invinciboll.enums.FileFormat;
+import com.invinciboll.enums.XMLFormat;
+
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;

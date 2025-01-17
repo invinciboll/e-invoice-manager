@@ -12,6 +12,16 @@
 !!! Adaptions to xr-pdf.xsl
 
 
+
+326 (Partial invoice)
+380 (Commercial invoice)
+384 (Corrected invoice)
+389 (Self-billed invoice)
+381 (Credit note)
+875 (Partial construction invoice)
+876 (Partial final construction invoice)
+877 (Final construction invoice)
+
 # Requirements
 - xrechnung / zugferd input
   - Drag and drop
