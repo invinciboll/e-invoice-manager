@@ -2,7 +2,6 @@ com/invinciboll/ServerApplication.class
 com/invinciboll/FormatDetector.class
 com/invinciboll/XRechnungTransformer$1.class
 com/invinciboll/KeyInformation.class
-com/invinciboll/Invoice.class
 com/invinciboll/entities/TempInvoice$1.class
 com/invinciboll/entities/InvoiceEntity.class
 com/invinciboll/repositories/InvoiceRepository.class

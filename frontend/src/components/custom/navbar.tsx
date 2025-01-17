@@ -16,11 +16,12 @@ const Navbar = () => {
         <NavigationMenu>
           <NavigationMenuList className="flex space-x-6">
             <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link to="/" className="text-gray-700 hover:text-gray-900">
-                  Import
-                </Link>
-              </NavigationMenuLink>
+              <Link to="/" className="flex items-center text-black bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Import
+              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink asChild>

@@ -1,6 +1,9 @@
 
 export type InputFileFormat = "ZF_PDF" | "XML" | "PDF" | "Invalid";
 export type TechnicalStandard = "CII" | "UBL"
+
+export type Progress = "NOT_STARTED" | "IN_PROGRESS" | "DONE"
+
 export type KeyInformation = {
     invoiceReference: string,
     sellerName: string,

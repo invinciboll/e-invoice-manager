@@ -1,6 +1,6 @@
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/FormatDetector.java
-/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/Invoice.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/KeyInformation.java
+/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/NetworkPrinter.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/ServerApplication.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/TempInvoiceCache.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/XRechnungTransformer.java

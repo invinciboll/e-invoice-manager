@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.FormatDetector;
 import com.invinciboll.KeyInformation;
+import com.invinciboll.NetworkPrinter;
 import com.invinciboll.XRechnungTransformer;
 import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.enums.FileFormat;
@@ -34,8 +35,7 @@ public class TempInvoice {
     private Path tempGeneratedFilePath;
     private String tempGenerateFileName;
 
-    private String originalFileExtension
-    ;
+    private String originalFileExtension;
     @Getter
     private FileFormat fileFormat;
 
@@ -179,7 +179,14 @@ public class TempInvoice {
             e.printStackTrace();
         }
 
-        // Persist in database as InvoiceEntity
+        // TODO: Persist in database as InvoiceEntity
     }
+
+    public void print() {
+        System.out.println("Printing invoice: " + keyInformation.invoiceReference());
+        NetworkPrinter.print(tempGeneratedFilePath.toString());
+        // Print generated file with network printer (it is outside the docker container)
+    }
+
 } 
 

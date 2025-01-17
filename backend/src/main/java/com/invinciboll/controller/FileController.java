@@ -54,7 +54,6 @@ public class FileController {
 
     @PostMapping("/persist")
     public ResponseEntity<?> persistInvoice(@RequestParam("invoiceId") String id) {
-        System.out.println("Persisting invoice with ID: " + id);
         UUID invoiceId = UUID.fromString(id);
         TempInvoice invoice = cache.get(invoiceId);
         if (invoice == null) {
@@ -63,7 +62,20 @@ public class FileController {
         }
 
         invoice.persist();
-        cache.remove(invoiceId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/print")
+    public ResponseEntity<?> printInvoice(@RequestParam("invoiceId") String id) {
+        UUID invoiceId = UUID.fromString(id);
+        TempInvoice invoice = cache.get(invoiceId);
+        if (invoice == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Invoice ID not found"); // Invoice not found
+        }
+
+        // invoice.print();
 
         return ResponseEntity.ok().build();
     }
