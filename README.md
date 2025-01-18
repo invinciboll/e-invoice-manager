@@ -7,9 +7,11 @@
 ## Backend
 - Java
 - Spring
-- Saxon-HE, FOP
+- Maven
+- Saxon-HE, FOP, H2
 
 ## Frontend
 - Vite
 - React
 - Typescript + SWE
+- ShadCN + Tailwind + Heroicons

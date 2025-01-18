@@ -1,0 +1,59 @@
+{
+    "welcome": "Welcome",
+    "navbar": {
+        "import": "Import",
+        "invoices": "Invoices",
+        "dashboard": "Analysis"
+    },
+    "fileupload" : {
+        "header": "Import Invoice",
+        "subheader": "Upload your PDF or XML file here",
+        "drop-area-text-1": "Drag and drop a file here, or",
+        "drop-area-text-2": "click to upload",
+        "process-button": "Process"
+    },
+    "overview" : {
+        "header-preview": "PDF Preview",
+        "key-information": "Summary",
+        "table": {
+            "header": {
+                "invoice-is": "E-Invoice",
+                "invoice-format": "Format",
+                "invoice-seller": "Seller",
+                "invoice-number": "Invoice Number",
+                "invoice-type": "Invoice Type",
+                "invoice-date": "Issue Date",
+                "invoice-amount": "Total Amount"
+            }
+        },
+        "file-exists-message": "The file already exists in the system.",
+        "button-print": "Print",
+        "button-save": "Save"
+    },
+    "invoices" : {
+        "filter-input" : "Filter by seller or reference number ...",
+        "table" : {
+            "issue-date" : "Issue Date",
+            "seller" : "Seller",
+            "reference-number" : "Reference Number",
+            "type-number" : "Invoice Type",
+            "amount" : "Amount"
+        },
+        "pagination" : {
+            "previous" : "Previous",
+            "next" : "Next"
+        }
+    },
+    "invoiceTypes": {
+        "partialInvoice": "Partial invoice",
+        "commercialInvoice": "Commercial invoice",
+        "correctedInvoice": "Corrected invoice",
+        "selfBilledInvoice": "Self-billed invoice",
+        "creditNote": "Credit note",
+        "partialConstructionInvoice": "Partial construction invoice",
+        "partialFinalConstructionInvoice": "Partial final construction invoice",
+        "finalConstructionInvoice": "Final construction invoice",
+        "unknown": "Unknown invoice type"
+    }
+}
+  

@@ -39,16 +39,6 @@ const Import = () => {
         <FileUpload onUpload={handleFileUpload} />
       </div>
 
-      {/* Divider Line */}
-      {fileInfo && (
-        <div
-          ref={dividerRef} // Attach ref for the divider
-          className="w-full max-w-7xl mx-auto mt-8 opacity-0 transition-opacity duration-700"
-        >
-          <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
-        </div>
-      )}
-
       {/* Content Section */}
       {fileInfo && (
         <div

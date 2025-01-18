@@ -7,9 +7,11 @@
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/configuration/AppConfig.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/configuration/WebConfig.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/controller/FileController.java
+/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/controller/InvoicesController.java
+/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/database/InvoiceDao.java
+/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/database/InvoiceDaoImpl.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/entities/InvoiceEntity.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/entities/TempInvoice.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/enums/ErrorCode.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/enums/FileFormat.java
 /home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/enums/XMLFormat.java
-/home/sboll/Projects/e-invoice-manager/backend/src/main/java/com/invinciboll/repositories/InvoiceRepository.java

@@ -1,0 +1,60 @@
+{
+    "welcome": "Willkommen",
+    "navbar": {
+        "import": "Importieren",
+        "invoices": "Rechnungen",
+        "dashboard": "Analyse"
+    },
+    "fileupload" : {
+        "header": "Rechnung importieren",
+        "subheader": "Laden Sie hier Ihre PDF- oder XML-Datei hoch",
+        "drop-area-text-1": "Ziehen Sie eine Datei hierher, oder",
+        "drop-area-text-2": "klicken Sie, um sie hochzuladen",
+        "process-button": "Verarbeiten"
+    },
+    "overview" : {
+        "header-preview": "PDF-Vorschau",
+        "key-information": "Zusammenfassung",
+        "table": {
+            "header": {
+                "invoice-is": "E-Rechnung",
+                "invoice-format": "Format",
+                "invoice-seller": "Verkäufer",
+                "invoice-number": "Rechnungsnummer",
+                "invoice-type": "Rechnungstyp",
+                "invoice-date": "Ausstellungsdatum",
+                "invoice-amount": "Gesamtbetrag"
+            }
+        },
+        "file-exists-message": "Die Datei ist bereits im System vorhanden.",
+        "button-print": "Drucken",
+        "button-save": "Speichern"
+    },
+    "invoices" : {
+        "filter-input" : "Filtern nach Verkäufer oder Referenznummer ...",
+        "table" : {
+            "issue-date" : "Ausstellungsdatum",
+            "seller" : "Verkäufer",
+            "reference-number" : "Referenznummer",
+            "type-number" : "Rechnungstyp",
+            "amount" : "Betrag"
+        },
+        "pagination" : {
+            "previous" : "Zurück",
+            "next" : "Weiter"
+        }
+    },
+    "invoiceTypes": {
+        "partialInvoice": "Teilschlussrechnung",
+        "commercialInvoice": "Rechnung",
+        "creditNote": "Gutschrift",
+        "correctedInvoice": "Rechnungskorrektur",
+        "selfBilledInvoice": "Selbstfakturierte Rechnung", 
+        "partialConstructionInvoice": "Abschlagsrechnung (Bauleistung)", 
+        "partialFinalConstructionInvoice": "Teilschlussrechnung (Bauleistung)", 
+        "finalConstructionInvoice": "Schlussrechnung (Bauleistung)" 
+        
+    }
+}
+
+

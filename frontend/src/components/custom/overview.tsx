@@ -1,6 +1,9 @@
 import { FileInfo, InputFileFormat, Progress, TechnicalStandard } from "@/types";
 import { Button } from "../ui/button";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "@/util";
+import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
 
 type OverviewProps = {
   fileInfo: FileInfo;
@@ -8,8 +11,9 @@ type OverviewProps = {
 };
 
 
-const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
-
+const Overview: React.FC<OverviewProps> = ({ fileInfo }) => {
+  const { t } = useTranslation();
+  const { translateInvoiceType } = useInvoiceTypeTranslator();
   // Add state to track if file is printed and saved
   const [isPrinting, setIsPrinting] = React.useState<Progress>("NOT_STARTED");
   const [isSaving, setIsSaving] = React.useState<Progress>(fileInfo.alreadyExists ? "DONE" : "NOT_STARTED");
@@ -56,12 +60,12 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
 
   return (
     <div className="w-full flex flex-col items-center text-left space-y-6">
-      <h2 className="text-2xl font-bold">Overview</h2>
-      <table className="table-auto border-collapse border border-gray-300">
+      <h2 className="text-2xl font-bold">{t("overview.key-information")}</h2>
+      <table className="table-auto">
         <tbody>
-          <tr className="border-b border-gray-300">
-            <td className="p-2 font-semibold text-gray-700">E-Invoice</td>
-            <td className="p-2 text-gray-600 flex">
+          <tr>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-is")}</td>
+            <td className="p-2 text-gray-600">
               {isElectronicInvoice() ? (
                 "Yes"
               ) : (
@@ -69,33 +73,33 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
               )}
             </td>
           </tr>
-          <tr className="border-b border-gray-300">
-            <td className="p-2 font-semibold text-gray-700">Format</td>
+          {/* <tr className="border-b border-gray-300">
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-format")}</td>
             <td className="p-2 text-gray-600">{fileInfo.inputFormat} ({fileInfo.technicalStandard})</td>
-          </tr>
+          </tr> */}
           <tr>
-            <td className="p-2 font-semibold text-gray-700">Seller</td>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-seller")}</td>
             <td className="p-2 text-gray-600">{fileInfo.keyInformation.sellerName}</td>
           </tr>
           <tr>
-            <td className="p-2 font-semibold text-gray-700">Invoice Ref.</td>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-number")}</td>
             <td className="p-2 text-gray-600">{fileInfo.keyInformation.invoiceReference}</td>
           </tr>
           <tr>
-            <td className="p-2 font-semibold text-gray-700">Invoice Type</td>
-            <td className="p-2 text-gray-600">{fileInfo.keyInformation.invoiceTypeCode}</td>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-type")}</td>
+            <td className="p-2 text-gray-600">{translateInvoiceType(fileInfo.keyInformation.invoiceTypeCode)}</td>
           </tr>
           <tr>
-            <td className="p-2 font-semibold text-gray-700">Issue Date</td>
-            <td className="p-2 text-gray-600">{fileInfo.keyInformation.issuedDate}</td>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-date")}</td>
+            <td className="p-2 text-gray-600">{formatDate(fileInfo.keyInformation.issuedDate)}</td>
           </tr>
           <tr>
-            <td className="p-2 font-semibold text-gray-700">Total Sum</td>
-            <td className="p-2 text-gray-600">{fileInfo.keyInformation.totalSum}</td>
+            <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-amount")}</td>
+            <td className="p-2 text-gray-600">{fileInfo.keyInformation.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</td>
           </tr>
         </tbody>
       </table>
-      {fileInfo.alreadyExists && <div> The file already exists in the system.</div>}
+      {fileInfo.alreadyExists && <div> {t("overview.file-exists-message")}</div>}
       <div className="flex space-x-4">
         <Button 
           onClick={handlePrint} 
@@ -114,7 +118,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7"></path>
               </svg> 
             </span>
-          ) : 'Print'}
+          ) : t("overview.button-print")}
         </Button>
 
         <Button 
@@ -134,7 +138,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, iframeRef }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7"></path>
               </svg> 
             </span>
-          ) : 'Save'}
+          ) : t("overview.button-save")}
         </Button>
         
       </div>

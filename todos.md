@@ -19,11 +19,9 @@ Do not expose publicly because:
 # Todo frontend
 - add finish/ clear button
 - clear when click on import
-- improve import page styling (also use auto scroll)
 - add validation section with either green or error or warning
-- add darkmode
-- dashboard
-  - add button to open invoice
+- add info to type 
+
 
 Environment vars:
 - Backend

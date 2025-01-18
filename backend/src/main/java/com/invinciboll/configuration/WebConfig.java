@@ -26,5 +26,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + dirName + "/")
                 .setCachePeriod(3600) // Optional: Set caching
                 .resourceChain(true); // Enable resource chaining
+
+        String outDirName = AppConfig.getInstance().getProperty("output.dir", "output");
+        registry.addResourceHandler("/" + outDirName + "/**")
+                .addResourceLocations("file:" + outDirName + "/")
+                .setCachePeriod(3600) // Optional: Set caching
+                .resourceChain(true); // Enable resource chaining
+
+
     }
 }

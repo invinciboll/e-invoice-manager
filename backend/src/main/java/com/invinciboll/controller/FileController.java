@@ -55,8 +55,8 @@ public class FileController {
         }
 
         cache.put(temporaryInvoice);
-
-        Map<String, Object> responseBody = temporaryInvoice.prepareJSONResponse(invoiceDao);   
+  
+        Map<String, Object> responseBody = temporaryInvoice.prepareJSONResponse(invoiceDao); 
         return ResponseEntity.ok(responseBody);
     }
 

@@ -3,12 +3,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileInfo } from "@/types";
 import { ReceiptPoundSterlingIcon, XIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DocumentCurrencyEuroIcon} from "@heroicons/react/24/solid";
 
 type FileUploadProps = {
   onUpload: (fileInfo: FileInfo) => void;
 };
 
 const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
@@ -97,9 +100,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-4">Import File</h1>
+      <h1 className="text-3xl font-bold mb-4">{t("fileupload.header")}</h1>
       <p className="mb-6 text-gray-600 dark:text-gray-300">
-        Drag and drop your PDF or XML file below, or click to upload.
+        {t("fileupload.subheader")}
       </p>
 
       {/* Drag-and-Drop Area */}
@@ -112,9 +115,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
         <CardContent className="text-center">
           {file === null ? (
             <div>
-              <ReceiptPoundSterlingIcon className="mx-auto mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
+              <DocumentCurrencyEuroIcon className="mx-auto mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
               <p className="text-gray-500 dark:text-gray-400">
-                Drag and drop a file here, or <span className="font-semibold">click to upload</span>
+                {t("fileupload.drop-area-text-1")}<span className="font-semibold"> {t("fileupload.drop-area-text-2")}</span>
               </p>
             </div>
           ) : (
@@ -148,7 +151,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
             file ? "bg-yellow-400 text-black hover:bg-yellow-500" : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
-          Process
+          {t("fileupload.process-button")}
         </Button>
       </div>
 

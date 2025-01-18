@@ -1,8 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/custom/navbar";
-import Import from "./pages/import";
-import Dashboard from "./pages/dashboard";
+import Navbar from "@/components/custom/navbar";
+import Import from "@/pages/import";
+import Dashboard from "@/pages/dashboard";
+import "@/i18n"; // Import i18n configuration
+import Invoices from "./pages/invoices";
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
       <div className="flex flex-col items-center w-full h-full">
         <Routes>
           <Route path="/" element={<Import />} />
+          <Route path="/invoices" element={<Invoices />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div> 

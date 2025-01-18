@@ -22,6 +22,28 @@
 876 (Partial final construction invoice)
 877 (Final construction invoice)
 
+
+    TypeCode: 326 – Teilrechnung (eigentlich: Teilschlussrechnung)
+    Die Teilrechnung ist eine normale Rechnung mit der eine oder mehrere erbrachte Leistungsposten abgerechnet werden. Dies ist meisten der Fall bei längeren Projekten oder z.B. gestaffelten Warenlieferungen. Im Gegensatz zu einer Abschlagsrechnung, die unabhängig von der bereits erbrachten Leistung ist, werden mit einer Teilrechnung nur tatsächlich erbrachte Leistungen abgerechnet mit allen damit verbundenen Gewährleistungspflichten.
+    TypeCode: 380 – Rechnung
+    Dieser Typ beschreibt den „Normalfall“ einer Waren- oder Handelsrechnung und ist der gebräuchlichste Typ für die meisten Rechnungen.
+    TypeCode: 381 – Gutschrift
+    Eine Gutschrift ist steuerrechtlich eine Rechnung, die -im Gegensatz zur Rechnung- vom Leistungsempfänger ausgestellt wird. Nicht zu verwechseln ist die Gutschrift mit einer Rechnungskorrektur die landläufig auch als „Gutschrift“ bezeichnet wird.
+    TypeCode: 384 – Rechnungskorrektur
+    Eine Rechnungskorrektur (oder auch Stornorechnung) wird erstellt, wenn eine Rechnung falsch erstellt wurde oder die Leistung nicht vollständig oder mangelhaft erbracht wurde und damit der Rechnungsbetrag reduziert werden muss. Eine Rechnungskorrektur muss sich dabei immer auf eine bereits erstellte Rechnung beziehen.
+    TypeCode: 389 – Selbstfakturierte Rechnung
+    Eine selbstfakturierte Rechnung wird vom Kunden ausgestellt. Der Lieferant erhält eine Rechnungskopie und die Zahlung von dem Kunde.
+
+Für die Abrechnung von Bauleistungen müssen gemäß §§ 14 und 16 VOB/B folgende Rechnungstypen verwendet werden.
+
+    TypeCode: 875 – Abschlagsrechnung (Bauleistung)
+    Eine Abschlagsrechnung für Bauleistung. Eine Abschlagsrechnung hat nicht dieselbe Verbindlichkeit wie eine Teilschluss- oder Schlussrechnung.
+    Typecode: 876 – Teilschlussrechnung (Bauleistung)
+    Eine Teilschlussrechnung hat denselben Charakter wie eine Schlussrechnung. Mit einer Teilschlussrechnung werden bereits geleistet Arbeiten im Rahmen einer Teilabnahme abgerechnet.
+    TypeCode: 877 – Schlussrechnung (Bauleistung)
+    Grundlage für die Schlussrechnung ist die Fertigstellung und die Abnahme der vereinbarten Leistungen zzgl. etwaiger Nachforderungen.
+
+
 # Requirements
 - xrechnung / zugferd input
   - Drag and drop
