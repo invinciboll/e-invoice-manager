@@ -21,3 +21,12 @@ export type FileInfo = {
     alreadyExists: boolean
 }
   
+
+export interface Invoice {
+    sellerName: string;
+    invoiceReference: string;
+    issuedDate: string; // Dates are usually strings when coming from APIs
+    totalSum: number; // Use number for precise calculations
+    fileFormat: string; // Assuming this is a string (Enum stored as string)
+}
+  

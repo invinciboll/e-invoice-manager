@@ -8,12 +8,12 @@ function App() {
   return (
     <Router>
       {/* Fixed Navbar */}
-      <div className="fixed top-0 left-0 w-full z-50 bg-gray-100">
+      <div className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
         <Navbar />
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center w-full h-full pt-[6rem] bg-gray-100">
+      <div className="flex flex-col items-center w-full h-full">
         <Routes>
           <Route path="/" element={<Import />} />
           <Route path="/dashboard" element={<Dashboard />} />

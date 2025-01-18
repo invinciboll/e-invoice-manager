@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileInfo } from "@/types";
-import { ReceiptPoundSterlingIcon } from "lucide-react";
+import { ReceiptPoundSterlingIcon, XIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
 
 type FileUploadProps = {
-  onUpload: (fileInfo: FileInfo) => void; // Callback to pass pdfUrl and fileId
+  onUpload: (fileInfo: FileInfo) => void;
 };
 
 const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
@@ -72,22 +72,19 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
       });
 
       if (response.ok) {
-        const jsonResponse = await response.json(); // Expecting JSON with `pdfUrl` and `fileId`
+        const jsonResponse = await response.json();
         const { fileUrl, invoiceId, fileFormat, xmlFormat, keyInformation, alreadyExists } = jsonResponse;
-        
-        const fileInfo: FileInfo = {
-            url: fileUrl,
-            id: invoiceId,
-            inputFormat: fileFormat,
-            technicalStandard: xmlFormat,
-            keyInformation,
-            alreadyExists
-        }
-        console.log(fileInfo);
-        setUploadStatus("File uploaded and processed successfully!");
-        setFile(null); // Clear the file after upload
 
-        // Pass the pdfUrl and fileId back to the parent component
+        const fileInfo: FileInfo = {
+          url: fileUrl,
+          id: invoiceId,
+          inputFormat: fileFormat,
+          technicalStandard: xmlFormat,
+          keyInformation,
+          alreadyExists,
+        };
+        setUploadStatus("File uploaded and processed successfully!");
+        setFile(null);
         onUpload(fileInfo);
       } else {
         const errorMessage = await response.text();
@@ -99,23 +96,38 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-gray-100">
+    <div className="h-full w-full flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold mb-4">Import File</h1>
-      <p className="mb-6 text-gray-600">Drag and drop your PDF or XML file below, or use the buttons to upload.</p>
+      <p className="mb-6 text-gray-600 dark:text-gray-300">
+        Drag and drop your PDF or XML file below, or click to upload.
+      </p>
 
       {/* Drag-and-Drop Area */}
       <Card
-        className="border-dashed border-2 border-gray-400 w-3/4 max-w-lg h-48 flex items-center justify-center bg-white"
+        className="relative border-dashed border-2 border-gray-400 dark:border-gray-600 w-3/4 max-w-lg h-48 flex items-center justify-center bg-gray-50 dark:bg-gray-800"
         onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
+        onClick={handleUploadClick}
       >
-        <CardContent>
+        <CardContent className="text-center">
           {file === null ? (
-            <p className="text-gray-500">Drag and drop a file here, or click to upload</p>
+            <div>
+              <ReceiptPoundSterlingIcon className="mx-auto mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
+              <p className="text-gray-500 dark:text-gray-400">
+                Drag and drop a file here, or <span className="font-semibold">click to upload</span>
+              </p>
+            </div>
           ) : (
-            <ul>
-              <li className="text-gray-700">{file.name}</li>
-            </ul>
+            <div className="flex flex-col items-center">
+              <p className="text-gray-700 dark:text-gray-300">{file.name}</p>
+              <button
+                onClick={clearFiles}
+                className="mt-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                aria-label="Clear file"
+              >
+                <XIcon className="w-5 h-5" />
+              </button>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -124,20 +136,17 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
       {/* Upload Status */}
-      {uploadStatus && <p className="mt-4 text-blue-500">{uploadStatus}</p>}
+      {uploadStatus && <p className="mt-4 text-blue-500 dark:text-blue-400">{uploadStatus}</p>}
 
-      {/* Buttons */}
-      <div className="mt-6 flex space-x-4">
-        <Button onClick={handleUploadClick} variant="default" className="bg-blue-500 text-white hover:bg-blue-600">
-          Upload
-        </Button>
-        <Button variant="secondary" onClick={clearFiles}>
-          Clear
-        </Button>
+      {/* Process Button */}
+      <div className="mt-6">
         <Button
           onClick={uploadFile}
           variant="default"
-          className="bg-green-500 text-white hover:bg-green-600"
+          disabled={!file}
+          className={`${
+            file ? "bg-yellow-400 text-black hover:bg-yellow-500" : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
         >
           Process
         </Button>

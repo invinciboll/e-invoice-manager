@@ -33,7 +33,9 @@ public class TempInvoice {
     private UUID invoiceId;
     
     private Path tempFilesPath;
+    @Getter
     private Path tempOriginalFilePath;
+    @Getter
     private Path tempGeneratedFilePath;
     private String tempGenerateFileName;
 
@@ -149,7 +151,7 @@ public class TempInvoice {
     }
 
     private boolean checkIfInvoiceExists(InvoiceDao invoiceDao) {
-        return invoiceDao.existsBySellerNameAndInvoiceReference(keyInformation.sellerName(), keyInformation.invoiceReference());
+        return invoiceDao.existsBySellerNameAndInvoiceReference(keyInformation.sellerName(), keyInformation.invoiceReference(), keyInformation.invoiceTypeCode());
     }
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
@@ -169,8 +171,8 @@ public class TempInvoice {
         String outputDir = AppConfig.getInstance().getProperty("output.dir");
         Path dirPath = Path.of(outputDir, keyInformation.sellerName());
         
-        String generatedFileName = keyInformation.invoiceReference() + ".pdf";
-        String originalFileName = "original_" + keyInformation.invoiceReference() + originalFileExtension;
+        String generatedFileName = keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + ".pdf";
+        String originalFileName = "original_" + keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + originalFileExtension;
         
         Path generatedFileOutputPath = dirPath.resolve(generatedFileName);
         Path originalFileOutputPath = dirPath.resolve(originalFileName);

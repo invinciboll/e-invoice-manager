@@ -1,5 +1,7 @@
 .vscode/
 
+*.db
+
 backend/output
 backend/tempfiles
 backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile

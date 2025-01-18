@@ -56,7 +56,7 @@ public class InvoiceDaoImpl implements InvoiceDao {
     }
 
     @Override
-    public boolean existsBySellerNameAndInvoiceReference(String sellerName, String invoiceReference) {
+    public boolean existsBySellerNameAndInvoiceReference(String sellerName, String invoiceReference, Integer invoiceTypeCode) {
         String sql = "SELECT COUNT(*) FROM InvoiceEntity WHERE seller_name = ? AND invoice_reference = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, sellerName, invoiceReference);
         return count != null && count > 0;

@@ -1,11 +1,103 @@
+import { useState, useEffect } from "react";
+import { InvoiceTable } from "@/components/custom/invoicestable";
+import { GraphsPanel } from "@/components/custom/graphspanel";
+
+interface Invoice {
+  sellerName: string;
+  invoiceReference: string;
+  invoiceTypeCode: number;
+  issuedDate: string;
+  totalSum: number;
+  fileFormat: string;
+}
+
 const Dashboard = () => {
-    return (
-      <div className="h-full w-full flex flex-col items-center justify-center bg-gray-200">
-        <h1 className="text-3xl font-bold">Dashboard Page</h1>
-        <p className="mt-4 text-gray-600">Manage your data and analytics here.</p>
-      </div>
-    );
-  };
-  
-  export default Dashboard;
-  
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Set default sorting to descending by date
+  const [sortColumn, setSortColumn] = useState<keyof Invoice>("issuedDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch("http://localhost:4711/invoices");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: Invoice[] = await response.json();
+        setInvoices(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const sortedInvoices = [...invoices].sort((a, b) => {
+    if (!sortColumn) return 0;
+    const valueA = a[sortColumn];
+    const valueB = b[sortColumn];
+
+    if (typeof valueA === "string" && typeof valueB === "string") {
+      return sortOrder === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+    }
+
+    if (typeof valueA === "number" && typeof valueB === "number") {
+      return sortOrder === "asc" ? valueA - valueB : valueB - valueA;
+    }
+
+    if (sortColumn === "issuedDate") {
+      const dateA = new Date(a.issuedDate);
+      const dateB = new Date(b.issuedDate);
+      return sortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    }
+
+    return 0;
+  });
+
+  const filteredInvoices = sortedInvoices.filter(
+    (invoice) =>
+      invoice.sellerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.invoiceReference.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="h-full w-full flex flex-col items-center justify-center pt-[6rem]">
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">Error: {error}</p>
+      ) : (
+        <>
+          {/* Graphs Section */}
+          <GraphsPanel invoices={invoices} />
+
+          {/* Table Section */}
+          <InvoiceTable
+            invoices={invoices}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            sortColumn={sortColumn}
+            setSortColumn={setSortColumn}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            filteredInvoices={filteredInvoices}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Dashboard;
