@@ -1,14 +1,5 @@
 # Install Steps
-1. clone xslt repo
-2. install apache ant 
-3. build the repo with apache ant using `ant`
-4. install java (slim jre)
-5. Install saxon HE as xslt processesor
-6
-7. Install fop
-   1. Dowload binary from website
-   2.  z
-
+1. clone xslt rep
 !!! Adaptions to xr-pdf.xsl
 
 
@@ -91,28 +82,3 @@ Für die Abrechnung von Bauleistungen müssen gemäß §§ 14 und 16 VOB/B folge
     XRechnung as another German standard is a subset of EN 16931. It is defined by another party called KoSIT (https://www.xoev.de/). It comes with its own validation rules (https://xeinkauf.de/dokumente/).
     This means that both Factur-X 1.0 (respectively ZUGFeRD 2.1) and XRechnung are conform with EN 16931. This does not automatically result that those invoices are per se identical.
     To achieve compatibility, ZUGFeRD 2.1.1 introduced a XRechnung reference profile to guarantee compatibility between the two sister formats.
-
-
-# Tool zum PDF zerlegen
-
-```
-java -jar saxon-he-12.5.jar -s:xrechnung-visualization/src/test/instances/maxRechnung_creditnote.xml  -xsl:xrechnung-visualization/src/xsl/ubl-invoice-xr.xsl -o:output.xr
-```
-
-```
-java -jar saxon-he-12.5.jar -s:ibis.xml -xsl:xrechnung-visualization/src/xsl/xr-pdf.xsl -o:output.fo
-```
-
-
-
-```
-java -jar saxon-he-12.5.jar -s:xrechnung-visualization/src/test/instances/maxRechnung_creditnote.xml -xsl:xrechnung-visualization/src/xsl/xr-pdf.xsl -o:output.fo
-
-```
-
-
-chmod fop
-```
-fop-2.10/fop/fop -fo output.fo -pdf output.pdf
-
-```

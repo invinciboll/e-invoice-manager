@@ -5,6 +5,7 @@ public enum XMLFormat {
     UBL_CREDIT_NOTE,
     CII,
     // EN16931_COMPLIANT,
-    UNKNOWN
+    UNKNOWN,
+    NONE // No XML content
 }
 

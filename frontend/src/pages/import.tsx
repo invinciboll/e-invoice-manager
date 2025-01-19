@@ -5,6 +5,7 @@ import Overview from "@/components/custom/overview";
 import { FileInfo } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "react-router-dom";
+import OverviewNEI from "@/components/custom/overviewNonElectonicInvoice";
 
 const Import = () => {
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
@@ -45,24 +46,28 @@ const Import = () => {
   return (
     <div className="w-full min-h-screen flex flex-col">
       {/* File Upload Section */}
-      <div className="w-full flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-800">
+      <div className="w-full flex flex-col items-center justify-center h-screen">
         <FileUpload ref={fileUploadRef} onUpload={handleFileUpload} />
       </div>
 
       {/* Content Section */}
       {fileInfo && (
-  <div
-    ref={contentRef} // Attach the ref to the content section
-    className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row justify-center pt-16 px-4 lg:px-8 min-h-screen"
-  >
-    <div className="w-full lg:w-[70%]">
-      <PdfViewer fileInfo={fileInfo} iframeRef={iframeRef} />
-    </div>
-    <div className="w-full lg:w-[30%] mt-8 lg:mt-0 lg:ml-8 flex flex-col items-center">
-      <Overview fileInfo={fileInfo} iframeRef={iframeRef} handleResetPage={handleResetPage}/>
-    </div>
-  </div>
-)}
+        <div
+          ref={contentRef} // Attach the ref to the content section
+          className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row justify-center pt-16 px-4 lg:px-8 min-h-screen"
+        >
+          <div className="w-full lg:w-[70%]">
+            <PdfViewer fileInfo={fileInfo} iframeRef={iframeRef} />
+          </div>
+          <div className="w-full lg:w-[30%] mt-8 lg:mt-0 lg:ml-8 flex flex-col items-center">
+            {fileInfo.inputFormat === "ZF_PDF" || fileInfo.inputFormat === "XML" ? 
+              <Overview fileInfo={fileInfo} iframeRef={iframeRef} handleResetPage={handleResetPage} />
+            :
+              <OverviewNEI fileInfo={fileInfo} handleResetPage={handleResetPage} iframeRef={iframeRef}/>
+            }
+          </div>
+        </div>
+      )}
 
     </div>
   );

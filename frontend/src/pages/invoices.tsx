@@ -73,14 +73,14 @@ const Invoices = () => {
   );
 
   return (
-    <div className="h-screen w-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-start overflow-hidden">
+    <div className="h-screen w-screen flex flex-col items-center justify-start overflow-hidden">
       {loading ? (
         <p className="mt-10">Loading...</p>
       ) : error ? (
         <p className="text-red-500 mt-10">Error: {error}</p>
       ) : (
         <div
-          className="w-full max-w-5xl mt-10 p-8 bg-white dark:bg-gray-800 shadow-lg rounded-md"
+          className="w-full max-w-5xl mt-10 p-8 shadow-lg rounded-md"
           style={{ height: "700px" }} // Fixed height for consistent card size
         >
           {/* Table Section */}

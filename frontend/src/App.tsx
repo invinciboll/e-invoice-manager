@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       {/* Fixed Navbar */}
-      <div className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
+      <div className="fixed top-0 left-0 w-full z-50 shadow-md">
         <Navbar />
       </div>
 

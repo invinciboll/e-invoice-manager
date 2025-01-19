@@ -113,7 +113,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
 
       {/* Drag-and-Drop Area */}
       <Card
-        className="relative border-dashed border-2 border-gray-400 dark:border-gray-600 w-3/4 max-w-lg h-48 flex items-center justify-center bg-gray-50 dark:bg-gray-800"
+        className="relative border-dashed border-2 border-gray-400 dark:border-gray-600 w-3/4 max-w-lg h-48 flex items-center justify-center"
         onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
         onClick={handleUploadClick}

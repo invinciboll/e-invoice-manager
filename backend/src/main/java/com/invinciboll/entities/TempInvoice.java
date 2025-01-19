@@ -104,7 +104,9 @@ public class TempInvoice {
     }
 
     private void processRegularInvoice() {
-
+        tempGenerateFileName = tempOriginalFilePath.getFileName().toString();
+        xmlFormat = XMLFormat.NONE;
+        keyInformation = new KeyInformation(null, null, null, null, null);
     }
 
     private void processElectronicInvoice() {

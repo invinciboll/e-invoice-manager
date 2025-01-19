@@ -97,8 +97,8 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
         <table className="table-auto w-full">
           <tbody>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-is")}</td>
-              <td className="p-2 text-gray-600">
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-is")}</td>
+              <td className="p-2">
                 {isElectronicInvoice() ? (
                   t("yes")
                 ) : (
@@ -107,16 +107,16 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
               </td>
             </tr>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-seller")}</td>
-              <td className="p-2 text-gray-600">{fileInfo.keyInformation.sellerName}</td>
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-seller")}</td>
+              <td className="p-2">{fileInfo.keyInformation.sellerName}</td>
             </tr>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-number")}</td>
-              <td className="p-2 text-gray-600">{fileInfo.keyInformation.invoiceReference}</td>
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-number")}</td>
+              <td className="p-2">{fileInfo.keyInformation.invoiceReference}</td>
             </tr>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-type")}</td>
-              <td className="p-2 text-gray-600">
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-type")}</td>
+              <td className="p-2">
                 {translateInvoiceType(fileInfo.keyInformation.invoiceTypeCode)}
                 <HoverCard>
                   <HoverCardTrigger>
@@ -129,12 +129,12 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
               </td>
             </tr>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-date")}</td>
-              <td className="p-2 text-gray-600">{formatDate(fileInfo.keyInformation.issuedDate)}</td>
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-date")}</td>
+              <td className="p-2">{formatDate(fileInfo.keyInformation.issuedDate)}</td>
             </tr>
             <tr>
-              <td className="p-2 font-semibold text-gray-700">{t("overview.table.header.invoice-amount")}</td>
-              <td className="p-2 text-gray-600">{fileInfo.keyInformation.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</td>
+              <td className="p-2 font-semibold">{t("overview.table.header.invoice-amount")}</td>
+              <td className="p-2">{fileInfo.keyInformation.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</td>
             </tr>
           </tbody>
         </table>

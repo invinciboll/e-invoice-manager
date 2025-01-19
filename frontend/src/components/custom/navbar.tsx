@@ -58,7 +58,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b bg-white dark:bg-gray-800">
+    <nav className="border-b bg-white dark:bg-black">
       <div className="container mx-auto flex items-center justify-between py-4">
         {/* Logo Section */}
         <div>
