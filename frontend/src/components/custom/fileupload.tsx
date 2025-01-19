@@ -1,16 +1,16 @@
+import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileInfo } from "@/types";
 import { ReceiptPoundSterlingIcon, XIcon } from "lucide-react";
-import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DocumentCurrencyEuroIcon} from "@heroicons/react/24/solid";
+import { DocumentCurrencyEuroIcon } from "@heroicons/react/24/solid";
 
 type FileUploadProps = {
   onUpload: (fileInfo: FileInfo) => void;
 };
 
-const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
+const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
@@ -54,7 +54,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
     setFile(null);
     setError("");
     setUploadStatus("");
-  };
+};
+
 
   const uploadFile = async () => {
     if (!file) {
@@ -98,6 +99,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
     }
   };
 
+  // Expose the clearFiles method to the parent component
+  useImperativeHandle(ref, () => ({
+    clearFiles,
+  }));
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold mb-4">{t("fileupload.header")}</h1>
@@ -117,7 +123,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
             <div>
               <DocumentCurrencyEuroIcon className="mx-auto mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
               <p className="text-gray-500 dark:text-gray-400">
-                {t("fileupload.drop-area-text-1")}<span className="font-semibold"> {t("fileupload.drop-area-text-2")}</span>
+                {t("fileupload.drop-area-text-1")}
+                <span className="font-semibold"> {t("fileupload.drop-area-text-2")}</span>
               </p>
             </div>
           ) : (
@@ -165,6 +172,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
       />
     </div>
   );
-};
+});
+
+FileUpload.displayName = "FileUpload";
 
 export default FileUpload;

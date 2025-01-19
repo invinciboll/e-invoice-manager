@@ -17,7 +17,7 @@ public class TempInvoiceCache {
 
     public TempInvoiceCache() {
         this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(30, TimeUnit.MINUTES) // Set expiration time
+                .expireAfterWrite(24, TimeUnit.HOURS) // Set expiration time
                 .maximumSize(50)                     // Set max cache size
                 .removalListener(new RemovalListener<UUID, TempInvoice>() {
                     @Override

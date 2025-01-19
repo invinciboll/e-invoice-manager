@@ -7,7 +7,17 @@
 Do not expose publicly because:
 - Backend hosts temp files non securely
 
-
+# Both
+- normal PDF handling
+  - save to temp
+  - forward temp file
+  - make input fields for invoice overview
+  - backend to save input
+- package everything in docker, check:
+  - frontend accessible
+  - temp pdf and output pdf accessible
+  - output save dir
+  - printer access
 
 # Todo backend
 - Refactor config and constants
@@ -15,12 +25,12 @@ Do not expose publicly because:
 - implement validation step
 - test & fix duplicate detection, maybe use hash
 
-
 # Todo frontend
 - add finish/ clear button
 - clear when click on import
 - add validation section with either green or error or warning
-- add info to type 
+- add info (i) to type 
+- fix darkmode
 
 
 Environment vars:
