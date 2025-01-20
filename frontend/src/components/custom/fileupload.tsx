@@ -113,7 +113,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
 
       {/* Drag-and-Drop Area */}
       <Card
-        className="relative border-dashed border-2 border-gray-400 dark:border-gray-600 w-3/4 max-w-lg h-48 flex items-center justify-center"
+        className="relative border-dashed border-4 w-3/4 max-w-lg h-48 flex items-center justify-center"
         onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
         onClick={handleUploadClick}
@@ -132,7 +132,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
               <p className="text-gray-700 dark:text-gray-300">{file.name}</p>
               <button
                 onClick={clearFiles}
-                className="mt-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                className="bg-red-500 text-white hover:bg-red-600"
                 aria-label="Clear file"
               >
                 <XIcon className="w-5 h-5" />

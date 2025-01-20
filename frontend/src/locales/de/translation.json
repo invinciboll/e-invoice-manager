@@ -42,7 +42,10 @@
         "file-exists-message": "Die Datei ist bereits im System vorhanden.",
         "button-print": "Drucken",
         "button-save": "Speichern",
-        "button-close": "Schließen"
+        "button-close": "Schließen",
+        "input" : {
+            "placeholder-type": "Rechnungstyp wählen"
+        }
     },
     "invoices" : {
         "filter-input" : "Filtern nach Verkäufer oder Referenznummer ...",

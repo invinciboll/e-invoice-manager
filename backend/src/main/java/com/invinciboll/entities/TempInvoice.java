@@ -1,9 +1,12 @@
 package com.invinciboll.entities;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -168,6 +171,81 @@ public class TempInvoice {
         return response;
     }
 
+    public void setKeyInformationFromUserInput(Map<String, Object> userInput) {
+        try {
+            // Validate and parse invoice date
+            LocalDate invoiceDate = null;
+            if (userInput.containsKey("invoiceDate") && userInput.get("invoiceDate") instanceof String) {
+                try {
+                    // Parse the full ISO 8601 date-time string and extract the LocalDate
+                    String dateString = (String) userInput.get("invoiceDate");
+                    invoiceDate = OffsetDateTime.parse(dateString).toLocalDate();
+                } catch (Exception e) {
+                    System.err.println("Error parsing invoice date: " + e.getMessage());
+                    e.printStackTrace();
+                    throw new IllegalArgumentException("Invalid date format for 'invoiceDate'");
+                }
+            }
+
+            // Validate and parse total sum
+            BigDecimal totalSum = null;
+            if (userInput.containsKey("totalSum")) {
+                try {
+                    Object totalSumInput = userInput.get("totalSum");
+                    if (totalSumInput instanceof String) {
+                        String sanitizedValue = ((String) totalSumInput).replace(",", ".");
+                        totalSum = new BigDecimal(sanitizedValue);
+                    } else if (totalSumInput instanceof Number) {
+                        totalSum = BigDecimal.valueOf(((Number) totalSumInput).doubleValue());
+                    } else {
+                        throw new IllegalArgumentException("Invalid data type for 'totalSum'");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing total sum: " + e.getMessage());
+                    e.printStackTrace();
+                    throw new IllegalArgumentException("Invalid format for 'totalSum'");
+                }
+            }
+
+            // Validate and parse invoice type
+            Integer invoiceTypeCode = null;
+            if (userInput.containsKey("invoiceType")) {
+                try {
+                    Object invoiceTypeInput = userInput.get("invoiceType");
+                    if (invoiceTypeInput instanceof String) {
+                        invoiceTypeCode = Integer.parseInt((String) invoiceTypeInput);
+                    } else if (invoiceTypeInput instanceof Number) {
+                        invoiceTypeCode = ((Number) invoiceTypeInput).intValue();
+                    } else {
+                        throw new IllegalArgumentException("Invalid data type for 'invoiceType'");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error parsing invoice type: " + e.getMessage());
+                    e.printStackTrace();
+                    throw new IllegalArgumentException("Invalid format for 'invoiceType'");
+                }
+            }
+
+            // Construct KeyInformation object
+            keyInformation = new KeyInformation(
+                (String) userInput.get("sellerName"),
+                (String) userInput.get("invoiceReference"),
+                invoiceTypeCode,
+                invoiceDate,
+                totalSum
+            );
+
+        } catch (IllegalArgumentException e) {
+            throw e; // Let the caller handle validation errors
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to process user input");
+        }
+    }
+
+    
+
     public void persist(InvoiceDao invoiceDao) {
         // Copy to output dir
         String outputDir = AppConfig.getInstance().getProperty("output.dir");
@@ -175,9 +253,13 @@ public class TempInvoice {
         
         String generatedFileName = keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + ".pdf";
         String originalFileName = "original_" + keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + originalFileExtension;
-        
+
         Path generatedFileOutputPath = dirPath.resolve(generatedFileName);
         Path originalFileOutputPath = dirPath.resolve(originalFileName);
+
+        if (fileFormat == FileFormat.PDF) { //TODO: IMPROVE THIS
+            generatedFileOutputPath = originalFileOutputPath;
+        }
 
         try {
             // Creates the directory and any necessary parent directories
@@ -185,8 +267,12 @@ public class TempInvoice {
                 Files.createDirectories(dirPath);
             }
             // Copy temp files to the output directory
-            Files.copy(tempGeneratedFilePath, generatedFileOutputPath);
-            Files.copy(tempOriginalFilePath, originalFileOutputPath);
+            if (fileFormat == FileFormat.PDF) { //todo: iMPROVE THIS
+                Files.copy(tempOriginalFilePath, originalFileOutputPath);
+            } else {
+                Files.copy(tempOriginalFilePath, originalFileOutputPath);
+                Files.copy(tempGeneratedFilePath, generatedFileOutputPath);
+            }
         } catch (Exception e) {
             System.err.println("Error getting output directory: " + e.getMessage());
             e.printStackTrace();

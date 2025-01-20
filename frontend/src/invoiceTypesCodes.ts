@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 export type InvoiceCode = 326 | 380 | 381 | 384 | 389 | 875 | 876 | 877;
 
 // Define the mappings between codes and translation keys
-const invoiceTypeMappings: Record<InvoiceCode, string> = {
+export const invoiceTypeMappings: Record<InvoiceCode, string> = {
     326: "invoiceTypes.partialInvoice",
     380: "invoiceTypes.commercialInvoice",
     381: "invoiceTypes.creditNote",

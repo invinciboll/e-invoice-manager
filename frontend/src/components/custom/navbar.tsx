@@ -4,10 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom"; // Import Lin
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid"; // Import icons from Heroicons
 import { Toggle } from "@/components/ui/toggle";
 import { useTranslation } from "react-i18next"; // Import translation hook
+import { useTheme } from "@/components/theme-provider"
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setTheme } = useTheme()
 
   const handleImportClick = () => {
     if (location.pathname === "/") {
@@ -35,10 +37,10 @@ const Navbar = () => {
   useEffect(() => {
     // Handle dark mode changes
     if (darkMode) {
-      document.documentElement.classList.add("dark");
+      setTheme("dark");
       localStorage.setItem("dark", "true");
     } else {
-      document.documentElement.classList.remove("dark");
+      setTheme("light");
       localStorage.setItem("dark", "false");
     }
   }, [darkMode]);

@@ -92,7 +92,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                 onChange={handleSearchChange}
                 className="mb-4"
             />
-
+            
             {/* Table */}
             <Table>
                 <TableCaption>A list of your recent invoices.</TableCaption>

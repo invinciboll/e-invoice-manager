@@ -34,6 +34,7 @@ public class TempInvoiceCache {
 
     // Store an object in the cache
     public void put(TempInvoice invoice) {
+        System.out.println("Put to cache - " + invoice.getInvoiceId());
         cache.put(invoice.getInvoiceId(), invoice);
     }
 

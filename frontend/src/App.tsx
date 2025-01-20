@@ -5,9 +5,11 @@ import Import from "@/pages/import";
 import Dashboard from "@/pages/dashboard";
 import "@/i18n"; // Import i18n configuration
 import Invoices from "./pages/invoices";
+import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
   return (
+    <ThemeProvider>
     <Router>
       {/* Fixed Navbar */}
       <div className="fixed top-0 left-0 w-full z-50 shadow-md">
@@ -23,6 +25,7 @@ function App() {
         </Routes>
       </div> 
     </Router>
+    </ThemeProvider>
   );
 }
 

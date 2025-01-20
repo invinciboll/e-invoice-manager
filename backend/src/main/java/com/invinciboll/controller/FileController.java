@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,7 @@ import com.invinciboll.TempInvoiceCache;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.TempInvoice;
 import com.invinciboll.enums.ErrorCode;
+import com.invinciboll.enums.FileFormat;
 
 @RestController
 public class FileController {
@@ -61,18 +64,46 @@ public class FileController {
     }
 
     @PostMapping("/persist")
-    public ResponseEntity<?> persistInvoice(@RequestParam("invoiceId") String id) {
-        UUID invoiceId = UUID.fromString(id);
-        TempInvoice invoice = cache.get(invoiceId);
-        if (invoice == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ErrorCode.ERR002.getMessage()); // Invoice not found
+    @ResponseBody
+    public ResponseEntity<?> persistInvoice(
+            @RequestParam("invoiceId") String id, 
+            @RequestBody(required = false) Map<String, Object> requestBody) {
+        try {
+            UUID invoiceId = UUID.fromString(id);
+            System.out.println("Request Body: " + requestBody + ", Invoice ID: " + invoiceId);
+            TempInvoice invoice = cache.get(invoiceId);
+            System.out.println("Invoice: " + invoice);
+            if (invoice == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ErrorCode.ERR002.getMessage()); // Invoice not found
+            }
+
+            // Process the body if it's not empty and the format is PDF
+            if (requestBody != null && invoice.getFileFormat() == FileFormat.PDF) {
+                // Assuming setKeyInformationFromUserInput accepts a Map or JSON string
+                try {
+                    invoice.setKeyInformationFromUserInput(requestBody);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(e.toString()); // Invalid request body
+                }
+;            }
+
+            // Persist the invoice
+            invoice.persist(invoiceDao);
+
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            // Handle invalid UUID
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid invoice ID format.");
+        } catch (Exception e) {
+            // Generic error handling
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred.");
         }
-
-        invoice.persist(invoiceDao);
-
-        return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/print")
     public ResponseEntity<?> printInvoice(@RequestParam("invoiceId") String id) {
