@@ -228,8 +228,8 @@ public class TempInvoice {
 
             // Construct KeyInformation object
             keyInformation = new KeyInformation(
-                (String) userInput.get("sellerName"),
                 (String) userInput.get("invoiceReference"),
+                (String) userInput.get("sellerName"),
                 invoiceTypeCode,
                 invoiceDate,
                 totalSum
