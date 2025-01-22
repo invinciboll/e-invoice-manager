@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
-import org.mustangproject.Invoice;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.FormatDetector;

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
 import { GraphsPanel } from "@/components/custom/graphspanel";
+import { backendUrl } from "@/Envs";
+import { useEffect, useState } from "react";
 
 interface Invoice {
   sellerName: string;
@@ -21,7 +22,7 @@ const Dashboard = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("http://localhost:4711/invoices");
+        const response = await fetch(`${backendUrl}/invoices`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

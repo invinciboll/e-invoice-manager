@@ -1,10 +1,11 @@
-import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { backendUrl } from "@/Envs";
 import { FileInfo } from "@/types";
-import { ReceiptPoundSterlingIcon, XIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { DocumentCurrencyEuroIcon } from "@heroicons/react/24/solid";
+import { XIcon } from "lucide-react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type FileUploadProps = {
   onUpload: (fileInfo: FileInfo) => void;
@@ -58,6 +59,9 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
 
 
   const uploadFile = async () => {
+    console.log(import.meta.env.VITE_BACKEND_HOST, import.meta.env.VITE_BACKEND_PORT);
+
+    console.log(backendUrl);
     if (!file) {
       setError("Please select a file to upload.");
       return;
@@ -70,7 +74,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:4711/upload", {
+      const response = await fetch(`${backendUrl}/upload`, {
         method: "POST",
         body: formData,
       });

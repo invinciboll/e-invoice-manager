@@ -1,17 +1,18 @@
-import { FileInfo, InputFileFormat, Progress, TechnicalStandard } from "@/types";
-import { Button } from "../ui/button";
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { formatDate } from "@/util";
-import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
+} from "@/components/ui/hover-card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { backendUrl } from "@/Envs";
+import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
+import { FileInfo, Progress } from "@/types";
+import { formatDate } from "@/util";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 
 
@@ -55,7 +56,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
   const handlePrint = async () => {
     try {
       setIsPrinting("IN_PROGRESS");
-      const response = await fetch(`http://localhost:4711/print?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
+      const response = await fetch(`${backendUrl}/print?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
         method: 'POST'
       });
 
@@ -73,7 +74,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
   const handlePersist = async () => {
     try {
       setIsSaving("IN_PROGRESS");
-      const response = await fetch(`http://localhost:4711/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
+      const response = await fetch(`${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
         method: 'POST'
       });
 

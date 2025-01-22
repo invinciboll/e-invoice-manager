@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useTheme } from "@/components/theme-provider";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Import Link from React Router
-import { SunIcon, MoonIcon } from "@heroicons/react/24/solid"; // Import icons from Heroicons
 import { Toggle } from "@/components/ui/toggle";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/solid"; // Import icons from Heroicons
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next"; // Import translation hook
-import { useTheme } from "@/components/theme-provider"
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Import Link from React Router
 
 const Navbar = () => {
   const navigate = useNavigate();

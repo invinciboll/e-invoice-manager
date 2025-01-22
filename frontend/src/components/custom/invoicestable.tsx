@@ -1,14 +1,4 @@
-import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import {
     Pagination,
     PaginationContent,
@@ -18,6 +8,20 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { backendUrl } from "@/Envs";
+import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
+import { formatDate } from "@/util";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Invoice {
@@ -40,9 +44,6 @@ interface InvoiceTableProps {
     setSortOrder: (order: "asc" | "desc") => void;
     filteredInvoices: Invoice[];
 }
-import { formatDate } from "@/util";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
-import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
 
 export const InvoiceTable: React.FC<InvoiceTableProps> = ({
     searchTerm,
@@ -53,7 +54,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
     setSortOrder,
     filteredInvoices,
 }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { translateInvoiceType } = useInvoiceTypeTranslator();
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 10;
@@ -130,7 +131,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                 <ArrowTopRightOnSquareIcon
                                     onClick={() => {
                                         // Send request with invoice.id
-                                        fetch(`http://localhost:4711/invoices/${invoice.invoiceId}`, {
+                                        fetch(`${backendUrl}/invoices/${invoice.invoiceId}`, {
                                             method: "GET",
                                         })
                                             .then(response => response.json())

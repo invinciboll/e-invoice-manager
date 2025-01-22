@@ -1,12 +1,17 @@
-# frontend/Dockerfile
-FROM node:18-alpine AS build
+FROM node:23-alpine AS build
 WORKDIR /app
 
-# Install dependencies using npm
+# Install dependencies
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the rest of the frontend source code and build the application
+# Pass environment variables at build time
+ARG VITE_BACKEND_HOST
+ARG VITE_BACKEND_PORT
+ENV VITE_BACKEND_HOST=$VITE_BACKEND_HOST
+ENV VITE_BACKEND_PORT=$VITE_BACKEND_PORT
+
+# Build the application
 COPY . .
 RUN npm run build
 

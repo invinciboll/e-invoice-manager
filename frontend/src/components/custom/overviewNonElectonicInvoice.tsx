@@ -1,31 +1,16 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
+import { de, enUS } from "date-fns/locale"
 import React from "react"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { format, set } from "date-fns"
-import { de, enUS } from "date-fns/locale"
 import { useTranslation } from "react-i18next"
+import * as z from "zod"
 
-import { Calendar } from "@/components/ui/calendar"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Form,
   FormControl,
@@ -34,12 +19,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
-import { CalendarIcon } from "lucide-react"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import { CalendarIcon } from "lucide-react"
 
-import { FileInfo, Progress } from "@/types"
+import { backendUrl } from "@/Envs"
 import { invoiceTypeMappings, useInvoiceTypeTranslator } from "@/invoiceTypesCodes"
+import { FileInfo, Progress } from "@/types"
 
 //------------------------//
 // 1) Define Zod Schema
@@ -112,7 +112,7 @@ const OverviewNEI: React.FC<OverviewNEIProps> = ({ fileInfo, handleResetPage }) 
   const handlePrint = async () => {
     try {
       setIsPrinting("IN_PROGRESS");
-      const response = await fetch(`http://localhost:4711/print?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
+      const response = await fetch(`${backendUrl}/print?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
         method: 'POST'
       });
 
@@ -135,7 +135,7 @@ const OverviewNEI: React.FC<OverviewNEIProps> = ({ fileInfo, handleResetPage }) 
       setIsSaving("IN_PROGRESS");
 
       // Send POST request to your backend
-      const response = await fetch(`http://localhost:4711/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
+      const response = await fetch(`${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

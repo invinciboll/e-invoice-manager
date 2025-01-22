@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
 import { InvoiceTable } from "@/components/custom/invoicestable";
+import { backendUrl } from "@/Envs";
+import { useEffect, useState } from "react";
 
 interface Invoice {
   invoiceId: string;  
@@ -27,7 +28,7 @@ const Invoices = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("http://localhost:4711/invoices");
+        const response = await fetch(`${backendUrl}/invoices`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

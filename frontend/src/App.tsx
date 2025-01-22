@@ -1,11 +1,10 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "@/components/custom/navbar";
-import Import from "@/pages/import";
-import Dashboard from "@/pages/dashboard";
 import "@/i18n"; // Import i18n configuration
-import Invoices from "./pages/invoices";
+import Dashboard from "@/pages/dashboard";
+import Import from "@/pages/import";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
+import Invoices from "./pages/invoices";
 
 function App() {
   return (
