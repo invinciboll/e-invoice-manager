@@ -47,7 +47,7 @@ public enum ErrorCode {
     }
 
     public String getMessage() {
-        String lang = AppConfig.getInstance().getProperty("language", "en");
-        return messages.getOrDefault(lang, messages.get("en")).getOrDefault(code, "Unknown error");
+        // String lang = AppConfig.getInstance().getLanguage();
+        return messages.getOrDefault("en", messages.get("en")).getOrDefault(code, "Unknown error");
     }
 }

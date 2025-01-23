@@ -1,52 +1,51 @@
 package com.invinciboll.configuration;
 
-import java.io.InputStream;
-import java.util.Properties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+@Getter
+@Component
 public class AppConfig {
-    private static AppConfig instance; // Singleton instance
-    private Properties properties;
 
-    private AppConfig(String fileName) throws Exception {
-        properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            if (input == null) {
-                throw new Exception("Unable to find " + fileName + " in resources.");
-            }
-            properties.load(input);
-        }
-    }
+    // XSLT Stylesheets
+    @Value("${xsl.ubl-invoice.to.xr}")
+    private String ublInvoiceToXR;
 
-    // Initialize AppConfig with a specific file name
-    public static AppConfig getInstance(String fileName) throws Exception {
-        if (instance == null) {
-            synchronized (AppConfig.class) { // Ensure thread safety
-                if (instance == null) {
-                    instance = new AppConfig(fileName);
-                }
-            }
-        }
-        return instance;
-    }
+    @Value("${xsl.ubl-creditnote.to.xr}")
+    private String ublCreditNoteToXR;
 
-    // Retrieve AppConfig instance when already initialized
-    public static AppConfig getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("AppConfig is not initialized. Call getInstance(String fileName) first.");
-        }
-        return instance;
-    }
+    @Value("${xsl.cii.to.xr}")
+    private String ciiToXR;
 
-    public String getProperty(String key) {
-        return properties.getProperty(key);
-    }
+    @Value("${xsl.xr.to.fo}")
+    private String xrToFo;
 
-    // Retrieve a property by key with a default value
-    public String getProperty(String key, String defaultValue) {
-        try {
-            return properties.getProperty(key, defaultValue); // Uses the Properties API default
-        } catch (Exception e) {
-            return defaultValue; // Fallback to the provided default value
-        }
-    }
+    @Value("${xsl.schema}")
+    private String schemaXSL;
+
+    // Output path
+    @Value("${output.dir}")
+    private String outputDir;
+
+    @Value("${tempfiles.dir}")
+    private String tempfilesDir;
+
+    // Testfiles xrechnung (from xrechnung-visualization repo)
+    @Value("${testfiles.xrechnung}")
+    private String testfilesXrechnung;
+
+    // Testfiles zugferd / factur-x(from feRD package)
+    @Value("${testfiles.zugferd}")
+    private String testfilesZugferd;
+
+    // en or de
+    @Value("${language}")
+    private String language;
+
+    @Value("${frontend.host}")
+    private String frontendHost;
+
+    @Value("${frontend.port}")
+    private String frontendPort;
 }

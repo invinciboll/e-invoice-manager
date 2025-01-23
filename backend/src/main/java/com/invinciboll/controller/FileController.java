@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.TempInvoiceCache;
+import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.TempInvoice;
 import com.invinciboll.enums.ErrorCode;
@@ -23,10 +24,12 @@ import com.invinciboll.enums.FileFormat;
 public class FileController {
     private static final TempInvoiceCache cache = new TempInvoiceCache();
     private final InvoiceDao invoiceDao;
+    private final AppConfig appConfig;
 
     @Autowired
-    public FileController(InvoiceDao invoiceDao) {
+    public FileController(InvoiceDao invoiceDao, AppConfig appConfig) {
         this.invoiceDao = invoiceDao;
+        this.appConfig = appConfig;
     }
 
     @PostMapping("/upload") 
@@ -42,7 +45,7 @@ public class FileController {
                     .body(ErrorCode.ERR001.getMessage()); // Invalid file Type
         }
 
-        TempInvoice temporaryInvoice = new TempInvoice();
+        TempInvoice temporaryInvoice = new TempInvoice(appConfig);
         try {
             temporaryInvoice.setFile(uploadedFile);
         } catch (RuntimeException e) {

@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.FormatDetector;
@@ -33,7 +36,7 @@ public class TempInvoice {
 
     @Getter
     private UUID invoiceId;
-    
+
     private Path tempFilesPath;
     @Getter
     private Path tempOriginalFilePath;
@@ -54,11 +57,13 @@ public class TempInvoice {
     @Getter
     private KeyInformation keyInformation;
 
+    private AppConfig appConfig;
 
-    public TempInvoice(){
+    public TempInvoice(AppConfig appConfig){
         this.invoiceId = UUID.randomUUID();
+        this.appConfig = appConfig;
 
-        String tempfiles = AppConfig.getInstance().getProperty("tempfiles.dir", "tempfiles"); //TODO: Static
+        String tempfiles = appConfig.getTempfilesDir();
         tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
         if (!Files.exists(tempFilesPath)) {
             try {
@@ -243,13 +248,13 @@ public class TempInvoice {
         }
     }
 
-    
+
 
     public void persist(InvoiceDao invoiceDao) {
         // Copy to output dir
-        String outputDir = AppConfig.getInstance().getProperty("output.dir");
+        String outputDir = appConfig.getOutputDir();
         Path dirPath = Path.of(outputDir, keyInformation.sellerName());
-        
+
         String generatedFileName = keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + ".pdf";
         String originalFileName = "original_" + keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + originalFileExtension;
 
@@ -296,5 +301,5 @@ public class TempInvoice {
         // Print generated file with network printer (it is outside the docker container)
     }
 
-} 
+}
 

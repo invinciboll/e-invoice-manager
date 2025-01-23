@@ -18,6 +18,8 @@ import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
@@ -36,10 +38,18 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
-
+@Component
 public class XRechnungTransformer {
     private static final Processor processor = new Processor(false); // Saxon Processor (no schema validation)
     private static final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI()); // FOP Factory
+
+    private static AppConfig appConfig;
+
+    @Autowired
+    public void setAppConfig(AppConfig appConfig) {
+        XRechnungTransformer.appConfig = appConfig;
+    }
+
 
     public static XdmNode parseXmlContent(Path inputPath, FileFormat fileFormat) throws Exception {
         String xmlContentString;
@@ -67,13 +77,13 @@ public class XRechnungTransformer {
         // Determine the appropriate XSLT based on XML format
         switch (xmlFormat) {
             case UBL_INVOICE:
-                xslToXR = AppConfig.getInstance().getProperty("xsl.ubl-invoice.to.xr");
+                xslToXR = appConfig.getUblInvoiceToXR();
                 break;
             case UBL_CREDIT_NOTE:
-                xslToXR = AppConfig.getInstance().getProperty("xsl.ubl-creditnote.to.xr");
+                xslToXR = appConfig.getUblCreditNoteToXR();
                 break;
             case CII:
-                xslToXR = AppConfig.getInstance().getProperty("xsl.cii.to.xr");
+                xslToXR = appConfig.getCiiToXR();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported XML format: " + xmlFormat);
@@ -153,7 +163,7 @@ public class XRechnungTransformer {
 
 
     public static XdmNode transformToFO(XdmNode xrContent) throws Exception {
-        String xslToFO = AppConfig.getInstance().getProperty("xsl.xr.to.fo");
+        String xslToFO = appConfig.getXrToFo();
         XsltCompiler compiler = processor.newXsltCompiler();
         XsltExecutable executable = compiler.compile(new StreamSource(xslToFO));
 
