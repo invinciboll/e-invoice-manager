@@ -13,6 +13,7 @@ import lombok.Setter;
 public class InvoiceEntity {
 
     private UUID invoiceId; // Primary Key
+    private String fileHash; // Hash stored as String
     private String originalFileSavePath; // Path stored as String
     private String generatedFileSavePath; // Path stored as String
     private String fileFormat; // Enum stored as String
@@ -25,6 +26,7 @@ public class InvoiceEntity {
 
     public InvoiceEntity(TempInvoice invoice, Path originalFileOutputPath, Path generatedFileOutputPath) {
         this.invoiceId = invoice.getInvoiceId();
+        this.fileHash = invoice.getFileHash();
         this.originalFileSavePath = originalFileOutputPath.toString()   ;
         this.generatedFileSavePath = generatedFileOutputPath.toString();
         this.fileFormat = invoice.getFileFormat().toString();
@@ -36,10 +38,11 @@ public class InvoiceEntity {
         this.totalSum = invoice.getKeyInformation().totalSum();
     }
 
-    public InvoiceEntity(UUID invoiceId, String originalFileSavePath, String generatedFileSavePath,
+    public InvoiceEntity(UUID invoiceId, String fileHash, String originalFileSavePath, String generatedFileSavePath,
         String fileFormat, String xmlFormat, String sellerName, String invoiceReference,
         Integer invoiceTypeCode, LocalDate issuedDate, BigDecimal totalSum) {
         this.invoiceId = invoiceId;
+        this.fileHash = fileHash;
         this.originalFileSavePath = originalFileSavePath;
         this.generatedFileSavePath = generatedFileSavePath;
         this.fileFormat = fileFormat;

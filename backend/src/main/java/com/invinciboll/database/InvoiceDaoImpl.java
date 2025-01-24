@@ -21,11 +21,12 @@ public class InvoiceDaoImpl implements InvoiceDao {
 
     @Override
     public void save(InvoiceEntity invoice) {
-        String sql = "INSERT INTO InvoiceEntity (invoice_id, original_file_save_path, generated_file_save_path, " +
+        String sql = "INSERT INTO InvoiceEntity (invoice_id, file_hash, original_file_save_path, generated_file_save_path, " +
                      "file_format, xml_format, seller_name, invoice_reference, invoice_type_code, issued_date, total_sum) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 invoice.getInvoiceId(),
+                invoice.getFileHash(),
                 invoice.getOriginalFileSavePath(),
                 invoice.getGeneratedFileSavePath(),
                 invoice.getFileFormat(),
@@ -56,9 +57,9 @@ public class InvoiceDaoImpl implements InvoiceDao {
     }
 
     @Override
-    public boolean existsBySellerNameAndInvoiceReference(String sellerName, String invoiceReference, Integer invoiceTypeCode) {
-        String sql = "SELECT COUNT(*) FROM InvoiceEntity WHERE seller_name = ? AND invoice_reference = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, sellerName, invoiceReference);
+    public boolean existsByFileHash(String fileHash) {
+        String sql = "SELECT COUNT(*) FROM InvoiceEntity WHERE file_hash = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, fileHash);
         return count != null && count > 0;
     }
 
@@ -67,6 +68,7 @@ public class InvoiceDaoImpl implements InvoiceDao {
         public InvoiceEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new InvoiceEntity(
                     UUID.fromString(rs.getString("invoice_id")),
+                    rs.getString("file_hash"),
                     rs.getString("original_file_save_path"),
                     rs.getString("generated_file_save_path"),
                     rs.getString("file_format"),

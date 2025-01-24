@@ -11,6 +11,6 @@ public interface InvoiceDao {
     List<InvoiceEntity> findAll();
     void deleteById(UUID invoiceId);
 
-    boolean existsBySellerNameAndInvoiceReference(String sellerName, String invoiceReference, Integer invoiceTypeCode);
+    boolean existsByFileHash(String fileHash);
 
 }

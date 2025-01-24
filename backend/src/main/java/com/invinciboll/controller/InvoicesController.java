@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.InvoiceEntity;
 import org.springframework.core.io.Resource;
@@ -25,10 +26,12 @@ import java.nio.file.Paths;
 public class InvoicesController {
 
     private final InvoiceDao invoiceDao;
+    private final AppConfig appConfig;
 
     @Autowired
-    public InvoicesController(InvoiceDao invoiceDao) {
+    public InvoicesController(InvoiceDao invoiceDao, AppConfig appConfig) {
         this.invoiceDao = invoiceDao;
+        this.appConfig = appConfig;
     }
 
     /**
@@ -51,7 +54,7 @@ public class InvoicesController {
     public ResponseEntity<?> getInvoicePdf(@PathVariable String invoiceId) {
         UUID id = UUID.fromString(invoiceId);
         InvoiceEntity invoice = invoiceDao.findById(id);
-        String fileUrl = "http://localhost:4711/" + invoice.getGeneratedFileSavePath();
+        String fileUrl = "http://" +  appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + invoice.getGeneratedFileSavePath();
 
         try {
             Path path = Paths.get(invoice.getGeneratedFileSavePath());

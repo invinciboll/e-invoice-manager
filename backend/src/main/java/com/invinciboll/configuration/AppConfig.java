@@ -48,4 +48,10 @@ public class AppConfig {
 
     @Value("${frontend.port}")
     private String frontendPort;
+
+    @Value("${server.host}")
+    private String backendHost;
+
+    @Value("${server.port}")
+    private String backendPort;
 }

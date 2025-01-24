@@ -37,6 +37,9 @@ public class TempInvoice {
     @Getter
     private UUID invoiceId;
 
+    @Getter
+    private String fileHash;
+
     private Path tempFilesPath;
     @Getter
     private Path tempOriginalFilePath;
@@ -92,6 +95,7 @@ public class TempInvoice {
     public void process() throws Exception {
         try {
             fileFormat = FormatDetector.detectFileFormat(tempOriginalFilePath);
+            fileHash = FormatDetector.computeFileHash(tempOriginalFilePath, "SHA-256");
         } catch (Exception e) {
             throw new RuntimeException("Error detecting file format: " + e.getMessage());
         }
@@ -160,12 +164,13 @@ public class TempInvoice {
     }
 
     private boolean checkIfInvoiceExists(InvoiceDao invoiceDao) {
-        return invoiceDao.existsBySellerNameAndInvoiceReference(keyInformation.sellerName(), keyInformation.invoiceReference(), keyInformation.invoiceTypeCode());
+        return invoiceDao.existsByFileHash(fileHash);
     }
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
         Map<String, Object> response = new HashMap<>();
-        response.put("fileUrl", "http://localhost:4711/" + "tempfiles/" + tempGenerateFileName);
+        String fileUrl = "http://" + appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
+        response.put("fileUrl", fileUrl);
         response.put("invoiceId", invoiceId);
         response.put("fileFormat", fileFormat.toString());
         response.put("xmlFormat", xmlFormat.toString());

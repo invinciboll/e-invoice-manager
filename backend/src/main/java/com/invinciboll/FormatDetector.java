@@ -3,6 +3,9 @@ package com.invinciboll;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 
@@ -36,6 +39,38 @@ public class FormatDetector {
         }
 
         return FileFormat.INVALID;
+    }
+
+    public static String computeFileHash(Path inputFile, String hashAlgorithm) throws Exception {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance(hashAlgorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new Exception("Invalid hash algorithm: " + hashAlgorithm, e);
+        }
+
+        // Read the file content and update the hash
+        try (FileInputStream fis = new FileInputStream(inputFile.toFile())) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            throw new Exception("Error reading file for hashing: " + e.getMessage());
+        }
+
+        // Convert the hash bytes to a hexadecimal string
+        return byteArrayToHex(digest.digest());
+    }
+
+    private static String byteArrayToHex(byte[] bytes) {
+        try (Formatter formatter = new Formatter()) {
+            for (byte b : bytes) {
+                formatter.format("%02x", b);
+            }
+            return formatter.toString();
+        }
     }
 
     private static boolean isXML(byte[] header) {
