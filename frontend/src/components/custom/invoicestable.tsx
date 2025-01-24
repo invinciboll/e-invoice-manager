@@ -93,7 +93,6 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                 onChange={handleSearchChange}
                 className="mb-4"
             />
-            
             {/* Table */}
             <Table>
                 <TableCaption>A list of your recent invoices.</TableCaption>
@@ -114,19 +113,17 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                         <TableHead className="text-right" onClick={() => handleSort("totalSum")}>
                             {t("invoices.table.amount")}  {sortColumn === "totalSum" && (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
-                        <TableHead></TableHead>
+                        <TableHead />
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {paginatedInvoices.map((invoice) => (
-                        <TableRow key={invoice.invoiceReference}>
-                            <TableCell>{formatDate(invoice.issuedDate)}</TableCell> {/* Localized Date */}
+                        <TableRow key={invoice.invoiceId}>
+                            <TableCell>{formatDate(invoice.issuedDate)}</TableCell>
                             <TableCell>{invoice.sellerName}</TableCell>
                             <TableCell>{invoice.invoiceReference}</TableCell>
                             <TableCell>{translateInvoiceType(invoice.invoiceTypeCode)}</TableCell>
-                            <TableCell className="text-right">
-                                {invoice.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}
-                            </TableCell>
+                            <TableCell className="text-right">{invoice.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</TableCell>
                             <TableCell>
                                 <ArrowTopRightOnSquareIcon
                                     onClick={() => {
@@ -150,7 +147,6 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                     className="h-5 w-5 cursor-pointer hover:text-yellow-400 transition-colors"
                                 />
                             </TableCell>
-
                         </TableRow>
                     ))}
                 </TableBody>
