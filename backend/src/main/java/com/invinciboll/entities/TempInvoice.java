@@ -260,8 +260,8 @@ public class TempInvoice {
         String outputDir = appConfig.getOutputDir();
         Path dirPath = Path.of(outputDir, keyInformation.sellerName());
 
-        String generatedFileName = keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + ".pdf";
-        String originalFileName = "original_" + keyInformation.invoiceReference() + "_" + keyInformation.invoiceTypeCode() + originalFileExtension;
+        String generatedFileName = keyInformation.invoiceReference() + "_" + fileHash + ".pdf";
+        String originalFileName = "original_" + keyInformation.invoiceReference() + "_" + fileHash + originalFileExtension;
 
         Path generatedFileOutputPath = dirPath.resolve(generatedFileName);
         Path originalFileOutputPath = dirPath.resolve(originalFileName);
