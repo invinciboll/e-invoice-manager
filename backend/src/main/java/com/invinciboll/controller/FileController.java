@@ -19,6 +19,7 @@ import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.TempInvoice;
 import com.invinciboll.enums.ErrorCode;
 import com.invinciboll.enums.FileFormat;
+import com.invinciboll.exceptions.CauseRetriever;
 
 @RestController
 public class FileController {
@@ -42,7 +43,7 @@ public class FileController {
              !contentType.equals("application/xml") &&
              !contentType.equals("text/xml"))) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(ErrorCode.ERR001.getMessage()); // Invalid file Type
+                    .body("File format is invalid, must be PDF or XML.");
         }
 
         TempInvoice temporaryInvoice = new TempInvoice(appConfig);
@@ -50,14 +51,15 @@ public class FileController {
             temporaryInvoice.setFile(uploadedFile);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorCode.ERR004.getMessage()); 
+                    .body("Internal server error: " + e.getMessage() + " Please retry and contact the admin if the issue persists." );
         }
 
         try {
             temporaryInvoice.process();
         } catch (Exception e) {
+            Throwable cause = CauseRetriever.getRootCause(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
+                    .body("Internal server error: " + cause.getMessage());
         }
 
         cache.put(temporaryInvoice);

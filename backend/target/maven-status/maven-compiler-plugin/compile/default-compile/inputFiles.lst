@@ -9,6 +9,8 @@ C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\enti
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\enums\ErrorCode.java
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\enums\FileFormat.java
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\enums\XMLFormat.java
+C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\exceptions\CauseRetriever.java
+C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\exceptions\ParserException.java
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\FormatDetector.java
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\KeyInformation.java
 C:\Users\sboll\code\e-invoice-manager\backend\src\main\java\com\invinciboll\NetworkPrinter.java

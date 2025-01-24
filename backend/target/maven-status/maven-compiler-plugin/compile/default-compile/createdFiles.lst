@@ -1,8 +1,8 @@
+com\invinciboll\KeyInformation.class
+com\invinciboll\entities\TempInvoice$1.class
+com\invinciboll\XRechnungTransformer$1.class
 com\invinciboll\FormatDetector.class
 com\invinciboll\enums\XMLFormat.class
-com\invinciboll\KeyInformation.class
 com\invinciboll\ServerApplication.class
 com\invinciboll\enums\FileFormat.class
-com\invinciboll\entities\TempInvoice$1.class
 com\invinciboll\NetworkPrinter.class
-com\invinciboll\XRechnungTransformer$1.class

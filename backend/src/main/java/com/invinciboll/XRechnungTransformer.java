@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
@@ -17,12 +18,14 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.checkerframework.checker.units.qual.t;
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
+import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.configuration.AppConfig;
 
 
@@ -108,14 +111,13 @@ public class XRechnungTransformer {
         return destination.getXdmNode();
     }
 
-    public static KeyInformation extractKeyInformation(XdmNode xrContent) {
-
+    public static KeyInformation extractKeyInformation(XdmNode xrContent) throws ParserException {
         XPathCompiler xpathCompiler = processor.newXPathCompiler();
 
-        // Declare namespaces if necessary (adjust based on your schema)
+        // Declare namespaces
         xpathCompiler.declareNamespace("xr", "urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung-1");
 
-        // XPath expressions for Seller Name and Invoice Number
+        // XPath expressions
         String sellerNameXPath = "//xr:Seller_name";
         String invoiceReferenceXPath = "//xr:invoice/xr:Invoice_number";
         String invoiceTypeCodeXPath = "//xr:invoice/xr:Invoice_type_code";
@@ -127,38 +129,62 @@ public class XRechnungTransformer {
         Integer invoiceTypeCode = -1; // Use `null` to indicate no value
         LocalDate issuedDate = LocalDate.MIN; // Represents the smallest possible LocalDate
         BigDecimal totalSum = BigDecimal.valueOf(-1); // Placeholder value indicating invalid
+
         try {
             sellerName = extractStringValue(xpathCompiler, xrContent, sellerNameXPath);
             invoiceReference = extractStringValue(xpathCompiler, xrContent, invoiceReferenceXPath);
             invoiceTypeCode = extractIntegerValue(xpathCompiler, xrContent, invoiceTypeCodeXPath);
             issuedDate = extractLocalDateValue(xpathCompiler, xrContent, issuedDateXPath);
             totalSum = extractBigDecimalValue(xpathCompiler, xrContent, totalSumXPath);
-        } catch (SaxonApiException e) {
+        } catch (ParserException e) {
+            // Log the error for debugging
+            System.err.println("Error extracting key information: " + e.getMessage());
             e.printStackTrace();
+
+            // Optionally rethrow with additional context
+            throw new ParserException("Error in extractKeyInformation: Unable to parse key details", e);
         }
+
+        // Return successfully extracted key information
         KeyInformation keyInformation = new KeyInformation(invoiceReference, sellerName, invoiceTypeCode, issuedDate, totalSum);
-        System.out.println(keyInformation.toString());
         return keyInformation;
     }
 
-    public static String extractStringValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
-        XdmValue result = xpathCompiler.evaluate(expression, xrContent);
-        return result.size() > 0 ? result.itemAt(0).getStringValue() : null;
+
+    public static String extractStringValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+        try {
+            XdmValue result = xpathCompiler.evaluate(expression, xrContent);
+            return result.size() > 0 ? result.itemAt(0).getStringValue() : null;
+        } catch (SaxonApiException e) {
+            throw new ParserException("Error extracting string value for expression: " + expression, e);
+        }
     }
 
-    public static Integer extractIntegerValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
-        String value = extractStringValue(xpathCompiler, xrContent, expression);
-        return value != null && !value.isEmpty() ? Integer.parseInt(value) : Integer.MIN_VALUE;
+    public static Integer extractIntegerValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+        try {
+            String value = extractStringValue(xpathCompiler, xrContent, expression);
+            return value != null && !value.isEmpty() ? Integer.parseInt(value) : Integer.MIN_VALUE;
+        } catch (NumberFormatException e) {
+            throw new ParserException("Invalid integer format for expression: " + expression, e);
+        }
     }
 
-    public static LocalDate extractLocalDateValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
-        String value = extractStringValue(xpathCompiler, xrContent, expression);
-        return value != null && !value.isEmpty() ? LocalDate.parse(value) : LocalDate.MIN;
+    public static LocalDate extractLocalDateValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+        try {
+            String value = extractStringValue(xpathCompiler, xrContent, expression);
+            return value != null && !value.isEmpty() ? LocalDate.parse(value) : LocalDate.MIN;
+        } catch (DateTimeParseException e) {
+            throw new ParserException("Invalid date format for expression: " + expression, e);
+        }
     }
 
-    public static BigDecimal extractBigDecimalValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws SaxonApiException {
-        String value = extractStringValue(xpathCompiler, xrContent, expression);
-        return value != null && !value.isEmpty() ? new BigDecimal(value) : BigDecimal.valueOf(-1);
+    public static BigDecimal extractBigDecimalValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+        try {
+            String value = extractStringValue(xpathCompiler, xrContent, expression);
+            return value != null && !value.isEmpty() ? new BigDecimal(value) : BigDecimal.valueOf(-1);
+        } catch (NumberFormatException e) {
+            throw new ParserException("Invalid BigDecimal format for expression: " + expression, e);
+        }
     }
 
 

@@ -25,6 +25,8 @@ import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
+import com.invinciboll.exceptions.ParserException;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -85,8 +87,7 @@ public class TempInvoice {
         try {
             uploadedFile.transferTo(tempOriginalFilePath.toFile());
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error saving file");
+            throw new RuntimeException("Error saving temporary file.");
         }
 
     }
@@ -95,11 +96,11 @@ public class TempInvoice {
     public void process() throws Exception {
         try {
             fileFormat = FormatDetector.detectFileFormat(tempOriginalFilePath);
-            fileHash = FormatDetector.computeFileHash(tempOriginalFilePath, "SHA-256");
         } catch (Exception e) {
             throw new RuntimeException("Error detecting file format: " + e.getMessage());
         }
 
+        fileHash = FormatDetector.computeFileHash(tempOriginalFilePath, "SHA-256");
         switch (fileFormat) {
             case PDF:
                 processRegularInvoice();
@@ -120,7 +121,7 @@ public class TempInvoice {
         keyInformation = new KeyInformation(null, null, null, null, null);
     }
 
-    private void processElectronicInvoice() {
+    private void processElectronicInvoice() throws RuntimeException {
         try {
             // Extract XML content
             xmlContent = XRechnungTransformer.parseXmlContent(tempOriginalFilePath, fileFormat);
@@ -157,9 +158,19 @@ public class TempInvoice {
 
         try {
             keyInformation = XRechnungTransformer.extractKeyInformation(xrContent);
-        } catch (Exception e) {
-            System.err.println("Error extracting key information: " + e.getMessage());
+        } catch (ParserException e) {
+            // Log the error with specific context
+            System.err.println("Parser error while extracting key information: " + e.getMessage());
             e.printStackTrace();
+            // Handle appropriately (e.g., fail gracefully or rethrow)
+            throw new RuntimeException("Failed to extract key information from xml content", e);
+        } catch (Exception e) {
+            // Catch unexpected exceptions and log
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+
+            // Handle appropriately (e.g., rethrow as RuntimeException)
+            throw new RuntimeException("Unexpected error during key information extraction", e);
         }
     }
 
