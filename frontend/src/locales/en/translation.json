@@ -15,14 +15,14 @@
         "invoices": "Invoices",
         "dashboard": "Analysis"
     },
-    "fileupload" : {
+    "fileupload": {
         "header": "Import Invoice",
         "subheader": "Upload your PDF or XML file here",
         "drop-area-text-1": "Drag and drop a file here, or",
         "drop-area-text-2": "click to upload",
         "process-button": "Process"
     },
-    "overview" : {
+    "overview": {
         "header-preview": "PDF Preview",
         "key-information": "Summary",
         "table": {
@@ -40,18 +40,18 @@
         "button-print": "Print",
         "button-save": "Save"
     },
-    "invoices" : {
-        "filter-input" : "Filter by seller or reference number ...",
-        "table" : {
-            "issue-date" : "Issue Date",
-            "seller" : "Seller",
-            "reference-number" : "Reference Number",
-            "type-number" : "Invoice Type",
-            "amount" : "Amount"
+    "invoices": {
+        "filter-input": "Filter by seller or reference number ...",
+        "table": {
+            "issue-date": "Issue Date",
+            "seller": "Seller",
+            "reference-number": "Reference Number",
+            "type-number": "Invoice Type",
+            "amount": "Amount"
         },
-        "pagination" : {
-            "previous" : "Previous",
-            "next" : "Next"
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next"
         }
     },
     "invoiceTypes": {
@@ -66,4 +66,3 @@
         "unknown": "Unknown invoice type"
     }
 }
-  

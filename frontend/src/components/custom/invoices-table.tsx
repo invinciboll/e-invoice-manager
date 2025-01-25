@@ -11,7 +11,6 @@ import {
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -25,7 +24,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Invoice {
-    invoiceId: string
+    invoiceId: string;
     sellerName: string;
     invoiceReference: string;
     invoiceTypeCode: number;
@@ -98,19 +97,29 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                 <TableHeader>
                     <TableRow>
                         <TableHead onClick={() => handleSort("issuedDate")}>
-                            {t("invoices.table.issue-date")} {sortColumn === "issuedDate" && (sortOrder === "asc" ? "↑" : "↓")}
+                            {t("invoices.table.issue-date")}{" "}
+                            {sortColumn === "issuedDate" && (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
                         <TableHead onClick={() => handleSort("sellerName")}>
-                            {t("invoices.table.seller")} {sortColumn === "sellerName" && (sortOrder === "asc" ? "↑" : "↓")}
+                            {t("invoices.table.seller")}{" "}
+                            {sortColumn === "sellerName" && (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
                         <TableHead onClick={() => handleSort("invoiceReference")}>
-                            {t("invoices.table.reference-number")} {sortColumn === "invoiceReference" && (sortOrder === "asc" ? "↑" : "↓")}
+                            {t("invoices.table.reference-number")}{" "}
+                            {sortColumn === "invoiceReference" &&
+                                (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
                         <TableHead onClick={() => handleSort("invoiceTypeCode")}>
-                            {t("invoices.table.type-number")} {sortColumn === "invoiceTypeCode" && (sortOrder === "asc" ? "↑" : "↓")}
+                            {t("invoices.table.type-number")}{" "}
+                            {sortColumn === "invoiceTypeCode" &&
+                                (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
-                        <TableHead className="text-right" onClick={() => handleSort("totalSum")}>
-                            {t("invoices.table.amount")}  {sortColumn === "totalSum" && (sortOrder === "asc" ? "↑" : "↓")}
+                        <TableHead
+                            className="text-right"
+                            onClick={() => handleSort("totalSum")}
+                        >
+                            {t("invoices.table.amount")}{" "}
+                            {sortColumn === "totalSum" && (sortOrder === "asc" ? "↑" : "↓")}
                         </TableHead>
                         <TableHead />
                     </TableRow>
@@ -121,8 +130,15 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             <TableCell>{formatDate(invoice.issuedDate)}</TableCell>
                             <TableCell>{invoice.sellerName}</TableCell>
                             <TableCell>{invoice.invoiceReference}</TableCell>
-                            <TableCell>{translateInvoiceType(invoice.invoiceTypeCode)}</TableCell>
-                            <TableCell className="text-right">{invoice.totalSum.toLocaleString("de-DE", { style: "currency", currency: "EUR" })}</TableCell>
+                            <TableCell>
+                                {translateInvoiceType(invoice.invoiceTypeCode)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                                {invoice.totalSum.toLocaleString("de-DE", {
+                                    style: "currency",
+                                    currency: "EUR",
+                                })}
+                            </TableCell>
                             <TableCell>
                                 <ArrowTopRightOnSquareIcon
                                     onClick={() => {
@@ -130,16 +146,19 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                         fetch(`${backendUrl}/invoices/${invoice.invoiceId}`, {
                                             method: "GET",
                                         })
-                                            .then(response => response.json())
-                                            .then(data => {
+                                            .then((response) => response.json())
+                                            .then((data) => {
                                                 if (data.fileUrl) {
                                                     // Open the PDF in a new tab
                                                     window.open(data.fileUrl, "_blank");
                                                 } else {
-                                                    console.error("File URL not found in response:", data);
+                                                    console.error(
+                                                        "File URL not found in response:",
+                                                        data
+                                                    );
                                                 }
                                             })
-                                            .catch(error => {
+                                            .catch((error) => {
                                                 console.error("Error fetching invoice:", error);
                                             });
                                     }}
@@ -194,7 +213,9 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                         <PaginationItem>
                             <PaginationNext
                                 href="#"
-                                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                                onClick={() =>
+                                    handlePageChange(Math.min(currentPage + 1, totalPages))
+                                }
                                 className="px-4 py-2 rounded text-black dark:text-white hover:bg-yellow-400 hover:text-white transition-colors"
                             >
                                 {t("invoices.pagination.next")}

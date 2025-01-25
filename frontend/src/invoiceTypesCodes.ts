@@ -25,13 +25,13 @@ export const useInvoiceTypeTranslator = () => {
      */
     const translateInvoiceType = (code: number): string => {
         const key = invoiceTypeMappings[code as InvoiceCode] ?? "invoiceTypes.unknown";
-        return t(key); 
+        return t(key);
     };
 
     const getInvoiceTypeDescription = (code: number): string => {
-        
+
         const key = invoiceTypeMappings[code as InvoiceCode] ?? "invoiceTypes.unknown";
-        return t(key + "-description") 
+        return t(key + "-description")
     }
 
     return { translateInvoiceType, getInvoiceTypeDescription };

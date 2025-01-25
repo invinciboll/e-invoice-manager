@@ -12,7 +12,7 @@
     },
     "yes": "Ja",
     "no": "Nein",
-    "popover" : {
+    "popover": {
         "confirm-title": "Rechnung nicht gespeichert!",
         "confirm-message": "Sind Sie sicher, dass Sie die Rechnung nicht speichern möchten?",
         "cancel": "Abbrechen",
@@ -23,14 +23,14 @@
         "invoices": "Rechnungen",
         "dashboard": "Analyse"
     },
-    "fileupload" : {
+    "fileupload": {
         "header": "Rechnung importieren",
         "subheader": "Laden Sie hier Ihre PDF- oder XML-Datei hoch",
         "drop-area-text-1": "Ziehen Sie eine Datei hierher, oder",
         "drop-area-text-2": "klicken Sie, um sie hochzuladen",
         "process-button": "Verarbeiten"
     },
-    "overview" : {
+    "overview": {
         "header-preview": "PDF-Vorschau",
         "key-information": "Zusammenfassung",
         "table": {
@@ -48,22 +48,22 @@
         "button-print": "Drucken",
         "button-save": "Speichern",
         "button-close": "Schließen",
-        "input" : {
+        "input": {
             "placeholder-type": "Rechnungstyp wählen"
         }
     },
-    "invoices" : {
-        "filter-input" : "Filtern nach Verkäufer oder Referenznummer ...",
-        "table" : {
-            "issue-date" : "Ausstellungsdatum",
-            "seller" : "Verkäufer",
-            "reference-number" : "Referenznummer",
-            "type-number" : "Rechnungstyp",
-            "amount" : "Betrag"
+    "invoices": {
+        "filter-input": "Filtern nach Verkäufer oder Referenznummer ...",
+        "table": {
+            "issue-date": "Ausstellungsdatum",
+            "seller": "Verkäufer",
+            "reference-number": "Referenznummer",
+            "type-number": "Rechnungstyp",
+            "amount": "Betrag"
         },
-        "pagination" : {
-            "previous" : "Zurück",
-            "next" : "Weiter"
+        "pagination": {
+            "previous": "Zurück",
+            "next": "Weiter"
         }
     },
     "invoiceTypes": {
@@ -75,7 +75,7 @@
         "creditNote-description": "Eine Gutschrift ist steuerrechtlich eine Rechnung, die -im Gegensatz zur Rechnung- vom Leistungsempfänger ausgestellt wird. Nicht zu verwechseln ist die Gutschrift mit einer Rechnungskorrektur die landläufig auch als „Gutschrift“ bezeichnet wird.",
         "correctedInvoice": "Rechnungskorrektur",
         "correctedInvoice-description": "Eine Rechnungskorrektur (oder auch Stornorechnung) wird erstellt, wenn eine Rechnung falsch erstellt wurde oder die Leistung nicht vollständig oder mangelhaft erbracht wurde und damit der Rechnungsbetrag reduziert werden muss. Eine Rechnungskorrektur muss sich dabei immer auf eine bereits erstellte Rechnung beziehen.",
-        "selfBilledInvoice": "Selbstfakturierte Rechnung", 
+        "selfBilledInvoice": "Selbstfakturierte Rechnung",
         "selfBilledInvoice-description": "Eine selbstfakturierte Rechnung wird vom Kunden ausgestellt. Der Lieferant erhält eine Rechnungskopie und die Zahlung von dem Kunde.",
         "partialConstructionInvoice": "Abschlagsrechnung (Bauleistung)",
         "partialConstructionInvoice-description": "Eine Abschlagsrechnung für Bauleistung. Eine Abschlagsrechnung hat nicht dieselbe Verbindlichkeit wie eine Teilschluss- oder Schlussrechnung.",
@@ -87,5 +87,3 @@
         "unknown-description": "Rechnugstyp ist dem System nicht bekannt."
     }
 }
-
-
