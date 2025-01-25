@@ -36,13 +36,11 @@ import { cn } from "@/lib/utils";
 
 import { CalendarIcon } from "lucide-react";
 
-import { backendUrl } from "@/Envs";
 import { Progress } from "@/types";
+import { FormSchemaNormalInvoice } from "@/utils/form-schema";
 import {
     invoiceTypeMappings
 } from "@/utils/invoice-type-utils";
-import AnimatedButton from "./animated-button";
-import { FormSchemaNormalInvoice } from "@/utils/form-schema";
 
 type SummaryFormProps = {
     fileInfo: FileInfo;
@@ -63,39 +61,39 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
 
     const form = useForm<z.infer<typeof FormSchemaNormalInvoice>>({
         resolver: zodResolver(FormSchemaNormalInvoice),
-        defaultValues: {
-            // Pull default values from fileInfo.keyInformation if available
-            sellerName: fileInfo.keyInformation?.sellerName || "",
-            invoiceReference: fileInfo.keyInformation?.invoiceReference || "",
-            invoiceType: "", // We'll map the code to a string in the Select below
-            invoiceDate: undefined,
-            totalSum: fileInfo.keyInformation?.totalSum || 0,
-        },
     });
 
     async function onSubmit(payload: z.infer<typeof FormSchemaNormalInvoice>) {
         try {
-            setIsSaving("IN_PROGRESS");
+            // setIsSaving("IN_PROGRESS");
+            const p = {
+                ...payload,
+                // Convert the date to the desired format or adjust timezone
+                invoiceDate: payload.invoiceDate
+                    ? format(payload.invoiceDate, "yyyy-MM-dd") // Or adjust as needed
+                    : null,
+            };
 
-            const response = await fetch(
-                `${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
+            console.log("Submitting form with payload:", JSON.stringify(p));
+            // const response = await fetch(
+            //     `${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`,
+            //     {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify(payload),
+            //     }
+            // );
 
-            if (!response.ok) {
-                setIsSaving("NOT_STARTED");
-                throw new Error(`Error: ${response.status} ${response.statusText}`);
-            }
-            setIsSaving("DONE");
-            const result = await response.json();
+            // if (!response.ok) {
+            //     setIsSaving("NOT_STARTED");
+            //     throw new Error(`Error: ${response.status} ${response.statusText}`);
+            // }
+            // setIsSaving("DONE");
+            // const result = await response.json();
 
-            console.log("Form submitted successfully:", result);
+            // console.log("Form submitted successfully:", result);
         } catch (error) {
             console.error("Failed to submit the form:", error);
         }
@@ -111,13 +109,13 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
             >
                 {/* Table Section */}
                 <div className="w-full">
-                    <table className="table-auto w-full">
+                    <table className="table-fixed w-full">
                         <tbody>
                             <tr>
                                 <td className="p-2 font-semibold">
                                     {t("overview.table.header.invoice-is")}
                                 </td>
-                                <td className="p-2">{t("no")}</td>
+                                <td className="p-2"><Input value={t("no")} disabled={true} /></td>
                             </tr>
 
                             {/* Seller Name Field */}
@@ -159,7 +157,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                     {t("overview.table.header.invoice-number")}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="RX123456789" {...field} />
+                                                    <Input placeholder="RX1234CF56789" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -184,27 +182,26 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value}
+                                                        onValueChange={(value) => field.onChange(Number(value))} // Convert the value back to a number for internal use
+                                                        value={String(field.value)} // Display the currently selected `typeCode` as a string
                                                     >
-                                                        <SelectTrigger className="w-[280px]">
+                                                        <SelectTrigger className="w-full">
                                                             <SelectValue
-                                                                placeholder={t(
-                                                                    "overview.input.placeholder-type"
-                                                                )}
+                                                                placeholder={t("overview.input.placeholder-type")}
                                                             />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {Object.keys(invoiceTypeMappings).map(
-                                                                (typeCode) => (
-                                                                    <SelectItem key={typeCode} value={typeCode}>
-                                                                        {translateInvoiceType(Number(typeCode))}
+                                                            {Array.from(invoiceTypeMappings.entries()).map(([typeCode, translationIdentifier]) => {
+                                                                return (
+                                                                    <SelectItem key={String(typeCode)} value={String(typeCode)}>
+                                                                        {t(translationIdentifier)} {/* Display the associated string */}
                                                                     </SelectItem>
-                                                                )
-                                                            )}
+                                                                );
+                                                            })}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
+
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -232,7 +229,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                             <Button
                                                                 variant={"outline"}
                                                                 className={cn(
-                                                                    "w-[240px] justify-start text-left font-normal",
+                                                                    "w-full justify-start text-left font-normal",
                                                                     !field.value && "text-muted-foreground"
                                                                 )}
                                                             >
@@ -240,7 +237,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                                 {field.value ? (
                                                                     format(field.value, "PPP", { locale })
                                                                 ) : (
-                                                                    <span>{t("pick-a-date")}</span>
+                                                                    <span>{t("overview.input.placeholder-date")}</span>
                                                                 )}
                                                             </Button>
                                                         </PopoverTrigger>
@@ -262,6 +259,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                             </FormItem>
                                         )}
                                     />
+
                                 </td>
                             </tr>
 
@@ -281,29 +279,11 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        placeholder={
-                                                            currentLang === "de" ? "0,00" : "0.00"
-                                                        }
-                                                        // Display logic: replace "." with "," for German
-                                                        value={
-                                                            field.value
-                                                                ? currentLang === "de"
-                                                                    ? field.value.toString().replace(".", ",")
-                                                                    : field.value.toString()
-                                                                : ""
-                                                        }
-                                                        onChange={(e) => {
-                                                            const input = e.target.value;
-                                                            const parsedValue =
-                                                                currentLang === "de"
-                                                                    ? parseFloat(input.replace(",", "."))
-                                                                    : parseFloat(input);
-                                                            if (!isNaN(parsedValue)) {
-                                                                field.onChange(parsedValue);
-                                                            } else {
-                                                                field.onChange("");
-                                                            }
-                                                        }}
+                                                        step={0.01} // Allow decimal numbers
+                                                        type="number"
+                                                        placeholder="0.00"
+                                                        value={field.value || ""} // Ensure the input has a value
+                                                        onChange={(e) => field.onChange(Number(e.target.value) || 0)} // Convert to number
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

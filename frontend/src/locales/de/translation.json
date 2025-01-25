@@ -49,7 +49,8 @@
         "button-save": "Speichern",
         "button-close": "Schließen",
         "input": {
-            "placeholder-type": "Rechnungstyp wählen"
+            "placeholder-type": "Rechnungstyp",
+            "placeholder-date": "Datum"
         }
     },
     "invoices": {
