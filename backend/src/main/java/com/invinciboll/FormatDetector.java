@@ -5,16 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
-
-import javax.management.RuntimeErrorException;
 
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
@@ -53,7 +48,7 @@ public class FormatDetector {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
             try (InputStream is = Files.newInputStream(inputFile);
-                 DigestInputStream dis = new DigestInputStream(is, md)) {
+                DigestInputStream dis = new DigestInputStream(is, md)) {
                 while (dis.read() != -1) {
                     // No need to process the data, just read to update the digest
                 }

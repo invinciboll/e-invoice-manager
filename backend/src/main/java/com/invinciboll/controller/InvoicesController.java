@@ -53,21 +53,21 @@ public class InvoicesController {
     }
 
     @GetMapping("/{invoiceId}")
-    public ResponseEntity<?> getInvoicePdf(@PathVariable String id) {
-        UUID invoiceId;
+    public ResponseEntity<?> getInvoicePdf(@PathVariable String invoiceId) {
+        UUID invoiceUUID;
         try {
-            invoiceId = UUID.fromString(id);
+            invoiceUUID = UUID.fromString(invoiceId);
         } catch (IllegalArgumentException e) {
             // Handle invalid UUID
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Invalid invoice ID format: " + e.getMessage());
         }
 
-        InvoiceEntity invoice = invoiceDao.findById(invoiceId);
+        InvoiceEntity invoice = invoiceDao.findById(invoiceUUID);
         if (invoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Invoice not found in database");
-        }
+        };
 
         String fileUrl = "http://" +  appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + invoice.getGeneratedFileSavePath();
         Path path = Paths.get(invoice.getGeneratedFileSavePath());
