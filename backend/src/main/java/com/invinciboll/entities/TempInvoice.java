@@ -1,10 +1,12 @@
 package com.invinciboll.entities;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -12,7 +14,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.fop.apps.FOPException;
 import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.t;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +30,12 @@ import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
+import com.invinciboll.exceptions.TransformationException;
 
-
+import ch.qos.logback.core.helpers.Transform;
 import lombok.Getter;
 import lombok.Setter;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
 
@@ -70,37 +76,28 @@ public class TempInvoice {
 
         String tempfiles = appConfig.getTempfilesDir();
         tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
-        if (!Files.exists(tempFilesPath)) {
+        if (!Files.exists(tempFilesPath)) { //TODO: move this to app
             try {
                 Files.createDirectories(tempFilesPath);
             } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Error creating tempfiles directory");
+                throw new RuntimeException("Error creating tempfiles directory: " + e.getMessage(), e);
             }
         }
     }
 
-    public void setFile(MultipartFile uploadedFile) throws RuntimeException{
+    public void setFile(MultipartFile uploadedFile) throws IOException, IllegalStateException {
         originalFileExtension = "."+ FilenameUtils.getExtension(uploadedFile.getOriginalFilename());
         String newFileName = "org_" + this.invoiceId.toString() + originalFileExtension;
         tempOriginalFilePath = tempFilesPath.resolve(newFileName);
-        try {
-            uploadedFile.transferTo(tempOriginalFilePath.toFile());
-        } catch (Exception e) {
-            throw new RuntimeException("Error saving temporary file.");
-        }
 
+        uploadedFile.transferTo(tempOriginalFilePath.toFile());
     }
 
 
-    public void process() throws Exception {
-        try {
-            fileFormat = FormatDetector.detectFileFormat(tempOriginalFilePath);
-        } catch (Exception e) {
-            throw new RuntimeException("Error detecting file format: " + e.getMessage());
-        }
-
+    public void process() throws IOException, ParserException, TransformationException, IllegalArgumentException {
+        fileFormat = FormatDetector.detectFileFormat(tempOriginalFilePath);
         fileHash = FormatDetector.computeFileHash(tempOriginalFilePath, "SHA-256");
+
         switch (fileFormat) {
             case PDF:
                 processRegularInvoice();
@@ -111,7 +108,7 @@ public class TempInvoice {
                 break;
             case INVALID:
             default:
-                throw new RuntimeException("Invalid file format");
+                throw new IllegalArgumentException("File can not be interpreted as valid PDF or XML, format is: " + fileFormat);
         }
     }
 
@@ -121,57 +118,30 @@ public class TempInvoice {
         keyInformation = new KeyInformation(null, null, null, null, null);
     }
 
-    private void processElectronicInvoice() throws RuntimeException {
+    private void processElectronicInvoice() throws ParserException, TransformationException {
         try {
-            // Extract XML content
             xmlContent = XRechnungTransformer.parseXmlContent(tempOriginalFilePath, fileFormat);
-        } catch (Exception e) {
-            throw new RuntimeException("Error parsing XML content: " + e.getMessage());
-        }
-
-        try {
-            // Determine technical XML standard (ubl, cii), needed for transformation
             xmlFormat = FormatDetector.detectXmlFormat(xmlContent);
-        } catch (Exception e) {
-            throw new RuntimeException("Error detecting XML format: " + e.getMessage());
+        } catch (IOException | ParserException | IllegalArgumentException e) {
+            throw new ParserException("Error parsing XML content: " + e.getMessage(), e);
         }
 
         try {
             xrContent = XRechnungTransformer.transformToXR(xmlContent, xmlFormat);
-        } catch (Exception e) {
-            throw new RuntimeException("Error transforming to intermediate representation: " + e.getMessage());
-        }
-
-        try {
             foContent = XRechnungTransformer.transformToFO(xrContent);
-        } catch (Exception e) {
-            throw new RuntimeException("Error transforming to FO: " + e.getMessage());
+        } catch (SaxonApiException e) {
+            throw new TransformationException("Error transforming to intermediate representation: " + e.getMessage(), e);
         }
 
+        tempGenerateFileName = "gen_" + this.invoiceId.toString() + ".pdf";
+        tempGeneratedFilePath = tempFilesPath.resolve(tempGenerateFileName);
         try {
-            tempGenerateFileName = "gen_" + this.invoiceId.toString() + ".pdf";
-            tempGeneratedFilePath = tempFilesPath.resolve(tempGenerateFileName);
             XRechnungTransformer.renderPDF(foContent, tempGeneratedFilePath.toString());
-        } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF: " + e.getMessage());
+        } catch (IOException | SaxonApiException | FOPException e) {
+            throw new TransformationException("Error rendering output PDF file: " + e.getMessage(),  e);
         }
 
-        try {
-            keyInformation = XRechnungTransformer.extractKeyInformation(xrContent);
-        } catch (ParserException e) {
-            // Log the error with specific context
-            System.err.println("Parser error while extracting key information: " + e.getMessage());
-            e.printStackTrace();
-            // Handle appropriately (e.g., fail gracefully or rethrow)
-            throw new RuntimeException("Failed to extract key information from xml content", e);
-        } catch (Exception e) {
-            // Catch unexpected exceptions and log
-            System.err.println("Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-
-            // Handle appropriately (e.g., rethrow as RuntimeException)
-            throw new RuntimeException("Unexpected error during key information extraction", e);
-        }
+        keyInformation = XRechnungTransformer.extractKeyInformation(xrContent);
     }
 
     private boolean checkIfInvoiceExists(InvoiceDao invoiceDao) {
@@ -192,82 +162,67 @@ public class TempInvoice {
     }
 
     public void setKeyInformationFromUserInput(Map<String, Object> userInput) {
-        try {
-            // Validate and parse invoice date
-            LocalDate invoiceDate = null;
-            if (userInput.containsKey("invoiceDate") && userInput.get("invoiceDate") instanceof String) {
-                try {
-                    // Parse the full ISO 8601 date-time string and extract the LocalDate
-                    String dateString = (String) userInput.get("invoiceDate");
-                    invoiceDate = OffsetDateTime.parse(dateString).toLocalDate();
-                } catch (Exception e) {
-                    System.err.println("Error parsing invoice date: " + e.getMessage());
-                    e.printStackTrace();
-                    throw new IllegalArgumentException("Invalid date format for 'invoiceDate'");
-                }
+
+        // Validate and parse invoice date
+        LocalDate invoiceDate = null;
+        if (userInput.containsKey("invoiceDate") && userInput.get("invoiceDate") instanceof String) {
+            try {
+                // Parse the full ISO 8601 date-time string and extract the LocalDate
+                String dateString = (String) userInput.get("invoiceDate");
+                invoiceDate = OffsetDateTime.parse(dateString).toLocalDate();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid date format for 'invoiceDate'");
             }
-
-            // Validate and parse total sum
-            BigDecimal totalSum = null;
-            if (userInput.containsKey("totalSum")) {
-                try {
-                    Object totalSumInput = userInput.get("totalSum");
-                    if (totalSumInput instanceof String) {
-                        String sanitizedValue = ((String) totalSumInput).replace(",", ".");
-                        totalSum = new BigDecimal(sanitizedValue);
-                    } else if (totalSumInput instanceof Number) {
-                        totalSum = BigDecimal.valueOf(((Number) totalSumInput).doubleValue());
-                    } else {
-                        throw new IllegalArgumentException("Invalid data type for 'totalSum'");
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error parsing total sum: " + e.getMessage());
-                    e.printStackTrace();
-                    throw new IllegalArgumentException("Invalid format for 'totalSum'");
-                }
-            }
-
-            // Validate and parse invoice type
-            Integer invoiceTypeCode = null;
-            if (userInput.containsKey("invoiceType")) {
-                try {
-                    Object invoiceTypeInput = userInput.get("invoiceType");
-                    if (invoiceTypeInput instanceof String) {
-                        invoiceTypeCode = Integer.parseInt((String) invoiceTypeInput);
-                    } else if (invoiceTypeInput instanceof Number) {
-                        invoiceTypeCode = ((Number) invoiceTypeInput).intValue();
-                    } else {
-                        throw new IllegalArgumentException("Invalid data type for 'invoiceType'");
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error parsing invoice type: " + e.getMessage());
-                    e.printStackTrace();
-                    throw new IllegalArgumentException("Invalid format for 'invoiceType'");
-                }
-            }
-
-            // Construct KeyInformation object
-            keyInformation = new KeyInformation(
-                (String) userInput.get("invoiceReference"),
-                (String) userInput.get("sellerName"),
-                invoiceTypeCode,
-                invoiceDate,
-                totalSum
-            );
-
-        } catch (IllegalArgumentException e) {
-            throw e; // Let the caller handle validation errors
-        } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to process user input");
         }
+
+        // Validate and parse total sum
+        BigDecimal totalSum = null;
+        if (userInput.containsKey("totalSum")) {
+            try {
+                Object totalSumInput = userInput.get("totalSum");
+                if (totalSumInput instanceof String) {
+                    String sanitizedValue = ((String) totalSumInput).replace(",", ".");
+                    totalSum = new BigDecimal(sanitizedValue);
+                } else if (totalSumInput instanceof Number) {
+                    totalSum = BigDecimal.valueOf(((Number) totalSumInput).doubleValue());
+                } else {
+                    throw new IllegalArgumentException("Invalid data type for 'totalSum'");
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid format for 'totalSum'");
+            }
+        }
+
+        // Validate and parse invoice type
+        Integer invoiceTypeCode = null;
+        if (userInput.containsKey("invoiceType")) {
+            try {
+                Object invoiceTypeInput = userInput.get("invoiceType");
+                if (invoiceTypeInput instanceof String) {
+                    invoiceTypeCode = Integer.parseInt((String) invoiceTypeInput);
+                } else if (invoiceTypeInput instanceof Number) {
+                    invoiceTypeCode = ((Number) invoiceTypeInput).intValue();
+                } else {
+                    throw new IllegalArgumentException("Invalid data type for 'invoiceType'");
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid format for 'invoiceType'");
+            }
+        }
+
+        // Construct KeyInformation object
+        keyInformation = new KeyInformation(
+            (String) userInput.get("invoiceReference"),
+            (String) userInput.get("sellerName"),
+            invoiceTypeCode,
+            invoiceDate,
+            totalSum
+        );
     }
 
 
 
-    public void persist(InvoiceDao invoiceDao) {
-        // Copy to output dir
+    public void persist(InvoiceDao invoiceDao) throws IOException{
         String outputDir = appConfig.getOutputDir();
         Path dirPath = Path.of(outputDir, keyInformation.sellerName());
 
@@ -282,39 +237,27 @@ public class TempInvoice {
         }
 
         try {
-            // Creates the directory and any necessary parent directories
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
+
             // Copy temp files to the output directory
-            if (fileFormat == FileFormat.PDF) { //todo: iMPROVE THIS
+            if (fileFormat == FileFormat.PDF) { //TODO: IMPROVE THIS
                 Files.copy(tempOriginalFilePath, originalFileOutputPath);
             } else {
                 Files.copy(tempOriginalFilePath, originalFileOutputPath);
                 Files.copy(tempGeneratedFilePath, generatedFileOutputPath);
             }
-        } catch (Exception e) {
-            System.err.println("Error getting output directory: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IOException("Error copying temp files to output directory: " + e.getMessage(), e);
         }
 
-        // Convert Te   mpInvoice to InvoiceEntity
         InvoiceEntity invoiceEntity = new InvoiceEntity(this, originalFileOutputPath, generatedFileOutputPath);
-
-        // Persist to database using DAO
-        try {
-            invoiceDao.save(invoiceEntity);
-            System.out.println("Invoice persisted successfully: " + invoiceEntity.getInvoiceId());
-        } catch (Exception e) {
-            System.err.println("Error saving invoice to database: " + e.getMessage());
-            e.printStackTrace();
-        }
+        invoiceDao.save(invoiceEntity);
     }
 
-    public void print() {
-        System.out.println("Printing invoice: " + keyInformation.invoiceReference());
-        NetworkPrinter.print(tempGeneratedFilePath.toString());
-        // Print generated file with network printer (it is outside the docker container)
+    public void print() throws IOException {
+        NetworkPrinter.print(appConfig.getPrinterIp(), appConfig.getPrinterPort(), tempGeneratedFilePath.toString());
     }
 
 }

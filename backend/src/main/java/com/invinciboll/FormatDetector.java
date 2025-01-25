@@ -7,7 +7,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 
+import javax.management.RuntimeErrorException;
+
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
@@ -18,13 +21,13 @@ import net.sf.saxon.s9api.XdmNodeKind;
 
 public class FormatDetector {
 
-    public static FileFormat detectFileFormat(Path inputFile) throws Exception {
+    public static FileFormat detectFileFormat(Path inputFile) throws IOException {
         String filePath = inputFile.toString();
         byte[] header = new byte[4];
         try (FileInputStream fis = new FileInputStream(filePath)) {
             fis.read(header, 0, 4);
         } catch (IOException e) {
-            throw new Exception("Error reading file header: " + e.getMessage());
+            throw new IOException("Error reading file header: " + e.getMessage());
         }
 
         if (isXML(header)) {
@@ -41,12 +44,12 @@ public class FormatDetector {
         return FileFormat.INVALID;
     }
 
-    public static String computeFileHash(Path inputFile, String hashAlgorithm) throws Exception {
+    public static String computeFileHash(Path inputFile, String hashAlgorithm) throws IOException {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance(hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
-            throw new Exception("Invalid hash algorithm: " + hashAlgorithm, e);
+            throw new RuntimeException("Invalid hash algorithm: " + hashAlgorithm, e);
         }
 
         // Read the file content and update the hash
@@ -57,7 +60,7 @@ public class FormatDetector {
                 digest.update(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            throw new Exception("Error reading file for hashing: " + e.getMessage());
+            throw new IOException("Error reading file for hashing: " + e.getMessage());
         }
 
         // Convert the hash bytes to a hexadecimal string
@@ -94,7 +97,7 @@ public class FormatDetector {
         }
     }
 
-    public static XMLFormat detectXmlFormat(XdmNode xmlDocument) throws Exception {
+    public static XMLFormat detectXmlFormat(XdmNode xmlDocument) {
         // Get the root element explicitly
         XdmNode rootElement = null;
         for (XdmNode child : xmlDocument.children()) {

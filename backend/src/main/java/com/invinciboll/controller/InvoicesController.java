@@ -18,6 +18,9 @@ import com.invinciboll.entities.InvoiceEntity;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.net.MalformedURLException;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -51,19 +54,32 @@ public class InvoicesController {
     }
 
     @GetMapping("/{invoiceId}")
-    public ResponseEntity<?> getInvoicePdf(@PathVariable String invoiceId) {
-        UUID id = UUID.fromString(invoiceId);
-        InvoiceEntity invoice = invoiceDao.findById(id);
+    public ResponseEntity<?> getInvoicePdf(@PathVariable String id) {
+        UUID invoiceId;
+        try {
+            invoiceId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            // Handle invalid UUID
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid invoice ID format: " + e.getMessage());
+        }
+
+        InvoiceEntity invoice = invoiceDao.findById(invoiceId);
+        if (invoice == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Invoice not found in database");
+        }
+
         String fileUrl = "http://" +  appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + invoice.getGeneratedFileSavePath();
+        Path path = Paths.get(invoice.getGeneratedFileSavePath());
 
         try {
-            Path path = Paths.get(invoice.getGeneratedFileSavePath());
             Resource resource = new UrlResource(path.toUri());
             if (!resource.exists() || !resource.isReadable()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found or not readable");
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while accessing the file");
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while accessing the file: " + e.getMessage());
         }
 
         Map<String, Object> responseBody = new HashMap<>();

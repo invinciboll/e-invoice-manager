@@ -1,5 +1,7 @@
 package com.invinciboll.controller;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +22,8 @@ import com.invinciboll.entities.TempInvoice;
 import com.invinciboll.enums.ErrorCode;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.exceptions.CauseRetriever;
+import com.invinciboll.exceptions.ParserException;
+import com.invinciboll.exceptions.TransformationException;
 
 @RestController
 public class FileController {
@@ -47,19 +51,19 @@ public class FileController {
         }
 
         TempInvoice temporaryInvoice = new TempInvoice(appConfig);
+
         try {
             temporaryInvoice.setFile(uploadedFile);
-        } catch (RuntimeException e) {
+        } catch (IOException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Internal server error: " + e.getMessage() + " Please retry and contact the admin if the issue persists." );
+                    .body("Failed to create temporary files: " + e.getMessage());
         }
 
         try {
             temporaryInvoice.process();
-        } catch (Exception e) {
-            Throwable cause = CauseRetriever.getRootCause(e);
+        } catch (ParserException | IOException | TransformationException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Internal server error: " + cause.getMessage());
+                    .body("Error processing invoice: " + CauseRetriever.getRootCause(e));
         }
 
         cache.put(temporaryInvoice);
@@ -73,53 +77,65 @@ public class FileController {
     public ResponseEntity<?> persistInvoice(
             @RequestParam("invoiceId") String id, 
             @RequestBody(required = false) Map<String, Object> requestBody) {
+        UUID invoiceId;
         try {
-            UUID invoiceId = UUID.fromString(id);
-            System.out.println("Request Body: " + requestBody + ", Invoice ID: " + invoiceId);
-            TempInvoice invoice = cache.get(invoiceId);
-            System.out.println("Invoice: " + invoice);
-            if (invoice == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ErrorCode.ERR002.getMessage()); // Invoice not found
-            }
-
-            // Process the body if it's not empty and the format is PDF
-            if (requestBody != null && invoice.getFileFormat() == FileFormat.PDF) {
-                // Assuming setKeyInformationFromUserInput accepts a Map or JSON string
-                try {
-                    invoice.setKeyInformationFromUserInput(requestBody);
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(e.toString()); // Invalid request body
-                }
-;            }
-
-            // Persist the invoice
-            invoice.persist(invoiceDao);
-
-            return ResponseEntity.ok().build();
+            invoiceId = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
             // Handle invalid UUID
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid invoice ID format.");
-        } catch (Exception e) {
-            // Generic error handling
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred.");
+                    .body("Invalid invoice ID format: " + e.getMessage());
         }
+
+        TempInvoice invoice = cache.get(invoiceId);
+        if (invoice == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Invoice not in cache. Try to upload/import the file again.");
+        }
+
+        if (requestBody != null && invoice.getFileFormat() == FileFormat.PDF) {
+            // Set key information from user input (applicable only for non-e-invoice PDF files)
+            try {
+                invoice.setKeyInformationFromUserInput(requestBody);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(e.getMessage()); // Invalid request body
+            }
+        }
+
+        try {
+            invoice.persist(invoiceDao);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to persist invoice: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
     }
 
 
     @PostMapping("/print")
     public ResponseEntity<?> printInvoice(@RequestParam("invoiceId") String id) {
-        UUID invoiceId = UUID.fromString(id);
+        UUID invoiceId;
+        try {
+            invoiceId = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            // Handle invalid UUID
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid invoice ID format.");
+        }
+
         TempInvoice invoice = cache.get(invoiceId);
         if (invoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Invoice ID not found"); // Invoice not found
+                .body("Invoice not in cache. Try to upload/import the file again.");
         }
 
-        // invoice.print();
+        try {
+            invoice.print();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to print invoice: " + e.getMessage());
+        }
 
         return ResponseEntity.ok().build();
     }

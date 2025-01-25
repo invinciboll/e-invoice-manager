@@ -54,4 +54,10 @@ public class AppConfig {
 
     @Value("${server.port}")
     private String backendPort;
+
+    @Value("${printer.ip}")
+    private String printerIp;
+
+    @Value("${printer.port}")
+    private int printerPort;
 }

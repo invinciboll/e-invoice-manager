@@ -1,7 +1,9 @@
 package com.invinciboll;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -14,6 +16,7 @@ import java.time.format.DateTimeParseException;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
@@ -26,6 +29,9 @@ import org.springframework.stereotype.Component;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
+
+import ch.qos.logback.core.pattern.parser.Parser;
+
 import com.invinciboll.configuration.AppConfig;
 
 
@@ -54,27 +60,34 @@ public class XRechnungTransformer {
     }
 
 
-    public static XdmNode parseXmlContent(Path inputPath, FileFormat fileFormat) throws Exception {
-        String xmlContentString;
-
-        // Read XML content depending on the file format
-        if (fileFormat == FileFormat.ZF_PDF) {
-            ZUGFeRDInvoiceImporter zii = new ZUGFeRDInvoiceImporter(inputPath.toString());
-            xmlContentString = zii.getUTF8(); // Extract XML content from ZF_PDF
-        } else if (fileFormat == FileFormat.XML) {
-            xmlContentString = Files.readString(inputPath, StandardCharsets.UTF_8); // Read XML from file
-        } else {
+    public static XdmNode parseXmlContent(Path inputPath, FileFormat fileFormat) throws IllegalArgumentException, IOException, ParserException {
+        if (fileFormat != FileFormat.ZF_PDF && fileFormat != FileFormat.XML) {
             throw new IllegalArgumentException("Unsupported file format: " + fileFormat);
         }
 
-        DocumentBuilder builder = processor.newDocumentBuilder();
-        builder.setLineNumbering(true); // Optional: Enable line numbering for debugging
+        String xmlContentString;
 
-        // Parse the XML content string into an XdmNode
-        return builder.build(new StreamSource(new StringReader(xmlContentString)));
+        if (fileFormat == FileFormat.ZF_PDF) {
+            ZUGFeRDInvoiceImporter zii = new ZUGFeRDInvoiceImporter(inputPath.toString());
+            xmlContentString = zii.getUTF8(); // Extract XML content from ZF_PDF
+        } else  {
+            try{
+                xmlContentString = Files.readString(inputPath, StandardCharsets.UTF_8); // Read XML from file
+            } catch (IOException e) {
+                throw new IOException("Unable to read XML content from XML file", e);
+            }
+        }
+
+        DocumentBuilder builder = processor.newDocumentBuilder();
+        try {
+            // Parse the XML content string into an XdmNode
+            return builder.build(new StreamSource(new StringReader(xmlContentString)));
+        } catch (SaxonApiException e) {
+            throw new ParserException("Unable to parse XML content", e);
+        }
     }
 
-    public static XdmNode transformToXR(XdmNode inputXmlDoc, XMLFormat xmlFormat) throws Exception {
+    public static XdmNode transformToXR(XdmNode inputXmlDoc, XMLFormat xmlFormat) throws SaxonApiException {
         String xslToXR;
 
         // Determine the appropriate XSLT based on XML format
@@ -89,7 +102,7 @@ public class XRechnungTransformer {
                 xslToXR = appConfig.getCiiToXR();
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported XML format: " + xmlFormat);
+                throw new IllegalStateException("Method should not be invoked for format: " + xmlFormat);
         }
 
         // Compile the XSLT
@@ -102,8 +115,6 @@ public class XRechnungTransformer {
 
         // Set up the destination for the transformed result
         XdmDestination destination = new XdmDestination();
-
-        // Perform the transformation
         transformer.setDestination(destination);
         transformer.transform();
 
@@ -188,7 +199,7 @@ public class XRechnungTransformer {
     }
 
 
-    public static XdmNode transformToFO(XdmNode xrContent) throws Exception {
+    public static XdmNode transformToFO(XdmNode xrContent) throws SaxonApiException {
         String xslToFO = appConfig.getXrToFo();
         XsltCompiler compiler = processor.newXsltCompiler();
         XsltExecutable executable = compiler.compile(new StreamSource(xslToFO));
@@ -204,13 +215,17 @@ public class XRechnungTransformer {
         return destination.getXdmNode();
     }
 
-    public static void renderPDF(XdmNode foInput, String outputPDFPath) throws Exception {
+    public static void renderPDF(XdmNode foInput, String outputPDFPath) throws IOException, FOPException, SaxonApiException {
         File tempFOFile = File.createTempFile("temp-output", ".fo");
         try (OutputStream foOut = new FileOutputStream(tempFOFile)) {
             Serializer serializer = foInput.getProcessor().newSerializer(foOut);
             serializer.setOutputProperty(Serializer.Property.METHOD, "xml");
             serializer.setOutputProperty(Serializer.Property.INDENT, "yes");
             serializer.serializeNode(foInput);
+        } catch (IOException e) {
+            throw new IOException("Error writing FO content to temporary file: " + e.getMessage());
+        } catch (SaxonApiException e) {
+            throw new SaxonApiException("Error serializing FO content: " + e.getMessage(), e);
         }
 
         FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
@@ -219,6 +234,10 @@ public class XRechnungTransformer {
             javax.xml.transform.TransformerFactory transformerFactory = javax.xml.transform.TransformerFactory.newInstance();
             javax.xml.transform.Transformer transformer = transformerFactory.newTransformer(); // Identity transformer
             transformer.transform(new javax.xml.transform.stream.StreamSource(tempFOFile), new SAXResult(fop.getDefaultHandler()));
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Error writing PDF content to output file: " + e.getMessage());
+        } catch (FOPException | javax.xml.transform.TransformerException e) {
+            throw new FOPException("Error rendering PDF content: " + e.getMessage(), e);
         } finally {
             // Clean up temporary FO file
             tempFOFile.delete();
