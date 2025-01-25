@@ -1,4 +1,5 @@
 {
+    "input-required": "Pflichtfeld",
     "alert": {
         "info": {
             "file-exists-header": "Rechnung existiert bereits!",
@@ -67,13 +68,14 @@
             "next": "Weiter"
         }
     },
+    "info-sheet-header": "Information zu Rechnungstypen",
     "invoiceTypes": {
         "partialInvoice": "Teilschlussrechnung",
         "partialInvoice-description": "Die Teilrechnung ist eine normale Rechnung mit der eine oder mehrere erbrachte Leistungsposten abgerechnet werden. Dies ist meisten der Fall bei längeren Projekten oder z.B. gestaffelten Warenlieferungen. Im Gegensatz zu einer Abschlagsrechnung, die unabhängig von der bereits erbrachten Leistung ist, werden mit einer Teilrechnung nur tatsächlich erbrachte Leistungen abgerechnet mit allen damit verbundenen Gewährleistungspflichten.",
         "commercialInvoice": "Rechnung",
         "commercialInvoice-description": "Dieser Typ beschreibt den „Normalfall“ einer Waren- oder Handelsrechnung und ist der gebräuchlichste Typ für die meisten Rechnungen.",
         "creditNote": "Gutschrift",
-        "creditNote-description": "Eine Gutschrift ist steuerrechtlich eine Rechnung, die -im Gegensatz zur Rechnung- vom Leistungsempfänger ausgestellt wird. Nicht zu verwechseln ist die Gutschrift mit einer Rechnungskorrektur die landläufig auch als „Gutschrift“ bezeichnet wird.",
+        "creditNote-description": "Eine Gutschrift ist steuerrechtlich eine Rechnung, die - im Gegensatz zur Rechnung- vom Leistungsempfänger ausgestellt wird. Nicht zu verwechseln ist die Gutschrift mit einer Rechnungskorrektur die landläufig auch als „Gutschrift“ bezeichnet wird.",
         "correctedInvoice": "Rechnungskorrektur",
         "correctedInvoice-description": "Eine Rechnungskorrektur (oder auch Stornorechnung) wird erstellt, wenn eine Rechnung falsch erstellt wurde oder die Leistung nicht vollständig oder mangelhaft erbracht wurde und damit der Rechnungsbetrag reduziert werden muss. Eine Rechnungskorrektur muss sich dabei immer auf eine bereits erstellte Rechnung beziehen.",
         "selfBilledInvoice": "Selbstfakturierte Rechnung",

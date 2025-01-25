@@ -1,4 +1,5 @@
 {
+    "input-required": "Mandatory field",
     "alert": {
         "info": {
             "file-exists-header": "The invoice already exists!",

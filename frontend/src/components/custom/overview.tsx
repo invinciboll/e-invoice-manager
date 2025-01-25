@@ -8,8 +8,6 @@ import AnimatedButton from "./animated-button";
 import { ConfirmSavePopover } from "./confirm-save-popover";
 import { SummaryForm } from "./overview-summary-form";
 import { SummaryTable } from "./overview-summary-table";
-import { FormSchemaNormalInvoice } from "@/utils/form-schema";
-import { z } from "zod";
 
 type OverviewProps = {
     fileInfo: FileInfo;
@@ -79,6 +77,11 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
 
     };
 
+    const updateSubmitButtonState = (progress: Progress) => {
+        // used to update out of the form component
+        setIsSaving(progress);
+    }
+
     return (
         <div className="w-full flex flex-col items-center text-left space-y-6">
             <h2 className="text-2xl font-bold">{t("overview.key-information")}</h2>
@@ -88,7 +91,7 @@ const Overview: React.FC<OverviewProps> = ({ fileInfo, handleResetPage }) => {
                 {fileInfo.inputFormat !== "PDF" ? (
                     <SummaryTable fileInfo={fileInfo} />
                 ) : (
-                    <SummaryForm fileInfo={fileInfo} formId="summaryForm" />)}
+                    <SummaryForm fileInfo={fileInfo} formId="summaryForm" updateSubmitButtonState={updateSubmitButtonState} />)}
             </div>
 
             {/* Info Alert Section */}

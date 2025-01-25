@@ -167,9 +167,8 @@ public class TempInvoice {
         LocalDate invoiceDate = null;
         if (userInput.containsKey("invoiceDate") && userInput.get("invoiceDate") instanceof String) {
             try {
-                // Parse the full ISO 8601 date-time string and extract the LocalDate
-                String dateString = (String) userInput.get("invoiceDate");
-                invoiceDate = OffsetDateTime.parse(dateString).toLocalDate();
+                // Parse the date "yyyy-MM-dd"
+                invoiceDate = LocalDate.parse((String) userInput.get("invoiceDate"));
             } catch (Exception e) {
                 throw new IllegalArgumentException("Invalid date format for 'invoiceDate'");
             }
@@ -181,8 +180,7 @@ public class TempInvoice {
             try {
                 Object totalSumInput = userInput.get("totalSum");
                 if (totalSumInput instanceof String) {
-                    String sanitizedValue = ((String) totalSumInput).replace(",", ".");
-                    totalSum = new BigDecimal(sanitizedValue);
+                    totalSum = new BigDecimal(totalSumInput.toString());
                 } else if (totalSumInput instanceof Number) {
                     totalSum = BigDecimal.valueOf(((Number) totalSumInput).doubleValue());
                 } else {

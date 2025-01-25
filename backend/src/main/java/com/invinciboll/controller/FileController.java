@@ -98,7 +98,7 @@ public class FileController {
                 invoice.setKeyInformationFromUserInput(requestBody);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(e.getMessage()); // Invalid request body
+                        .body("Invalid request body: " + e.getMessage()); // Invalid request body
             }
         }
 

@@ -1,11 +1,10 @@
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { FileInfo } from "@/types";
 import { formatDate } from "@/utils/date-utils";
 import { useInvoiceTypeTranslator } from "@/utils/invoice-type-utils";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { InvoiceTypeInfoSheet } from "./invoice-type-info-sheet";
 
 type SummaryTableProps = {
     fileInfo: FileInfo;
@@ -47,20 +46,10 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({ fileInfo }) => {
                 </tr>
                 <tr>
                     <td className="p-2 font-semibold">
-                        {t("overview.table.header.invoice-type")}
+                        {t("overview.table.header.invoice-type")} <InvoiceTypeInfoSheet />
                     </td>
                     <td className="p-2">
                         {translateInvoiceType(fileInfo.keyInformation.invoiceTypeCode)}
-                        <HoverCard>
-                            <HoverCardTrigger>
-                                <InformationCircleIcon className="w-5 h-5 inline-block ml-1 text-gray-400" />
-                            </HoverCardTrigger>
-                            <HoverCardContent>
-                                {getInvoiceTypeDescription(
-                                    fileInfo.keyInformation.invoiceTypeCode
-                                )}
-                            </HoverCardContent>
-                        </HoverCard>
                     </td>
                 </tr>
                 <tr>

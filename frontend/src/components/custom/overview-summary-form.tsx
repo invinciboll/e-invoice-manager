@@ -1,14 +1,4 @@
 
-import { FileInfo } from "@/types";
-import { useInvoiceTypeTranslator } from "@/utils/invoice-type-utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { de, enUS } from "date-fns/locale";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,31 +23,38 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { FileInfo } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { de, enUS } from "date-fns/locale";
+import React from "react";
+import CurrencyInput from 'react-currency-input-field';
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as z from "zod";
 
 import { CalendarIcon } from "lucide-react";
 
+import { backendUrl } from "@/Envs";
 import { Progress } from "@/types";
 import { FormSchemaNormalInvoice } from "@/utils/form-schema";
 import {
     invoiceTypeMappings
 } from "@/utils/invoice-type-utils";
+import { InvoiceTypeInfoSheet } from "./invoice-type-info-sheet";
 
 type SummaryFormProps = {
     fileInfo: FileInfo;
     formId: string;
+    updateSubmitButtonState: (state: Progress) => void;
 };
 
 
-export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) => {
+export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, updateSubmitButtonState }) => {
     const { t, i18n } = useTranslation();
-    const { translateInvoiceType } = useInvoiceTypeTranslator();
     const currentLang = i18n.language;
     const locale = currentLang === "de" ? de : enUS;
-
-    // State for other operations
-    const [isSaving, setIsSaving] = React.useState<Progress>(
-        fileInfo.alreadyExists ? "DONE" : "NOT_STARTED"
-    );
+    const [isCalendarOpen, setIsCalendarOpen] = React.useState(false)
 
     const form = useForm<z.infer<typeof FormSchemaNormalInvoice>>({
         resolver: zodResolver(FormSchemaNormalInvoice),
@@ -65,7 +62,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
 
     async function onSubmit(payload: z.infer<typeof FormSchemaNormalInvoice>) {
         try {
-            // setIsSaving("IN_PROGRESS");
+            updateSubmitButtonState("IN_PROGRESS");
             const p = {
                 ...payload,
                 // Convert the date to the desired format or adjust timezone
@@ -74,26 +71,24 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                     : null,
             };
 
-            console.log("Submitting form with payload:", JSON.stringify(p));
-            // const response = await fetch(
-            //     `${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`,
-            //     {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify(payload),
-            //     }
-            // );
+            const response = await fetch(
+                `${backendUrl}/persist?invoiceId=${encodeURIComponent(fileInfo.id)}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(p),
+                }
+            );
 
-            // if (!response.ok) {
-            //     setIsSaving("NOT_STARTED");
-            //     throw new Error(`Error: ${response.status} ${response.statusText}`);
-            // }
-            // setIsSaving("DONE");
-            // const result = await response.json();
+            if (!response.ok) {
+                updateSubmitButtonState("NOT_STARTED");
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            updateSubmitButtonState("DONE");
 
-            // console.log("Form submitted successfully:", result);
+            console.log("Form submitted successfully:", p);
         } catch (error) {
             console.error("Failed to submit the form:", error);
         }
@@ -169,7 +164,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                             {/* Invoice Type Field */}
                             <tr>
                                 <td className="p-2 font-semibold">
-                                    {t("overview.table.header.invoice-type")}
+                                    {t("overview.table.header.invoice-type")} <InvoiceTypeInfoSheet />
                                 </td>
                                 <td className="p-2">
                                     <FormField
@@ -224,7 +219,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                     {t("overview.table.header.invoice-date")}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Popover>
+                                                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen} >
                                                         <PopoverTrigger asChild>
                                                             <Button
                                                                 variant={"outline"}
@@ -248,7 +243,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                             <Calendar
                                                                 mode="single"
                                                                 selected={field.value}
-                                                                onSelect={field.onChange}
+                                                                onSelect={(e) => { field.onChange(e); setIsCalendarOpen(false); }}
                                                                 initialFocus
                                                                 locale={locale}
                                                             />
@@ -262,7 +257,6 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
 
                                 </td>
                             </tr>
-
                             {/* Invoice Amount Field */}
                             <tr>
                                 <td className="p-2 font-semibold">
@@ -278,12 +272,17 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId }) =>
                                                     {t("overview.table.header.invoice-amount")}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        step={0.01} // Allow decimal numbers
-                                                        type="number"
-                                                        placeholder="0.00"
-                                                        value={field.value || ""} // Ensure the input has a value
-                                                        onChange={(e) => field.onChange(Number(e.target.value) || 0)} // Convert to number
+                                                    <CurrencyInput
+                                                        intlConfig={i18n.language === "en" ? { locale: 'en-GB', currency: 'EUR' } : { locale: 'de-DE', currency: 'EUR' }}
+                                                        id="input-totalSum"
+                                                        name="input-totalSum"
+                                                        placeholder={i18n.language === "en" ? "€ 0.00" : "0.00 €"}
+                                                        decimalsLimit={2}
+                                                        decimalScale={2}
+                                                        onValueChange={(value, name, values) => field.onChange(values?.float)}
+                                                        className={cn(
+                                                            "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                                                        )}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
