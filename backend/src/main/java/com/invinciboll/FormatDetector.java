@@ -2,7 +2,11 @@ package com.invinciboll;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
@@ -45,34 +49,28 @@ public class FormatDetector {
     }
 
     public static String computeFileHash(Path inputFile, String hashAlgorithm) throws IOException {
-        MessageDigest digest;
         try {
-            digest = MessageDigest.getInstance(hashAlgorithm);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            try (InputStream is = Files.newInputStream(inputFile);
+                 DigestInputStream dis = new DigestInputStream(is, md)) {
+                while (dis.read() != -1) {
+                    // No need to process the data, just read to update the digest
+                }
+            }
+
+            byte[] digest = md.digest();
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : digest) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Invalid hash algorithm: " + hashAlgorithm, e);
-        }
-
-        // Read the file content and update the hash
-        try (FileInputStream fis = new FileInputStream(inputFile.toFile())) {
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                digest.update(buffer, 0, bytesRead);
-            }
+            // should never happen
+            throw new RuntimeException("Algorithm MD5 not found: " + e.getMessage());
         } catch (IOException e) {
-            throw new IOException("Error reading file for hashing: " + e.getMessage());
-        }
-
-        // Convert the hash bytes to a hexadecimal string
-        return byteArrayToHex(digest.digest());
-    }
-
-    private static String byteArrayToHex(byte[] bytes) {
-        try (Formatter formatter = new Formatter()) {
-            for (byte b : bytes) {
-                formatter.format("%02x", b);
-            }
-            return formatter.toString();
+           throw new IOException("Error reading file: " + e.getMessage());
         }
     }
 
