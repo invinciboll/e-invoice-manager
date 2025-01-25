@@ -1,14 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/types";
 import React from "react";
+import { Progress } from "@/types";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 interface AnimatedButtonProps {
     translationIdentifier: string;
-    onClick: () => void;
+    onClick?: () => void;
     disabled: boolean;
     progress: Progress;
     type?: "button" | "submit" | "reset";
+    formId?: string;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -17,6 +18,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     disabled,
     progress,
     type,
+    formId
 }) => {
     const { t } = useTranslation();
     return (
@@ -29,6 +31,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
                 }`}
             disabled={disabled}
             type={type}
+            form={type === "submit" && formId ? formId : undefined}
         >
             {progress === "IN_PROGRESS" ? (
                 <svg

@@ -41,7 +41,7 @@ import { backendUrl } from "@/Envs";
 import {
     invoiceTypeMappings,
     useInvoiceTypeTranslator,
-} from "@/invoiceTypesCodes";
+} from "@/utils/invoice-type-utils";
 import { FileInfo, Progress } from "@/types";
 import AnimatedButton from "./animated-button";
 

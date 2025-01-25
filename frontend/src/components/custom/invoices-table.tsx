@@ -17,8 +17,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { backendUrl } from "@/Envs";
-import { useInvoiceTypeTranslator } from "@/invoiceTypesCodes";
-import { formatDate } from "@/util";
+import { useInvoiceTypeTranslator } from "@/utils/invoice-type-utils";
+import { formatDate } from "@/utils/date-utils";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";

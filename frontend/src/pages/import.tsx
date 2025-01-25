@@ -59,20 +59,11 @@ const Import = () => {
                         <PdfViewer fileInfo={fileInfo} iframeRef={iframeRef} />
                     </div>
                     <div className="w-full lg:w-[30%] mt-8 lg:mt-0 lg:ml-8 flex flex-col items-center">
-                        {fileInfo.inputFormat === "ZF_PDF" ||
-                            fileInfo.inputFormat === "XML" ? (
-                            <Overview
-                                fileInfo={fileInfo}
-                                iframeRef={iframeRef}
-                                handleResetPage={handleResetPage}
-                            />
-                        ) : (
-                            <OverviewNEI
-                                fileInfo={fileInfo}
-                                handleResetPage={handleResetPage}
-                                iframeRef={iframeRef}
-                            />
-                        )}
+                        <Overview
+                            fileInfo={fileInfo}
+                            iframeRef={iframeRef}
+                            handleResetPage={handleResetPage}
+                        />
                     </div>
                 </div>
             )}
