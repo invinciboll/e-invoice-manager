@@ -1,11 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { backendUrl } from "@/Envs";
-import { FileInfo } from "@/types";
+import { FileInfo, Progress } from "@/types";
 import { DocumentCurrencyEuroIcon } from "@heroicons/react/24/solid";
 import { XIcon } from "lucide-react";
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
+import { AlertCircle } from "lucide-react";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import AnimatedButton from "./animatedbutton";
 
 type FileUploadProps = {
   onUpload: (fileInfo: FileInfo) => void;
@@ -15,7 +24,8 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
-  const [uploadStatus, setUploadStatus] = useState("");
+  const [uploadStatus, setUploadStatus] =
+    React.useState<Progress>("NOT_STARTED");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -38,6 +48,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
       setError("Only PDF and XML files are allowed.");
     } else {
       setFile(validFiles[0]);
+      setUploadStatus("NOT_STARTED");
     }
   };
 
@@ -54,12 +65,14 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
   const clearFiles = () => {
     setFile(null);
     setError("");
-    setUploadStatus("");
-};
-
+    setUploadStatus("NOT_STARTED");
+  };
 
   const uploadFile = async () => {
-    console.log(import.meta.env.VITE_BACKEND_HOST, import.meta.env.VITE_BACKEND_PORT);
+    console.log(
+      import.meta.env.VITE_BACKEND_HOST,
+      import.meta.env.VITE_BACKEND_PORT
+    );
 
     console.log(backendUrl);
     if (!file) {
@@ -68,7 +81,7 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
     }
 
     setError("");
-    setUploadStatus("Uploading...");
+    setUploadStatus("IN_PROGRESS");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -81,7 +94,14 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
 
       if (response.ok) {
         const jsonResponse = await response.json();
-        const { fileUrl, invoiceId, fileFormat, xmlFormat, keyInformation, alreadyExists } = jsonResponse;
+        const {
+          fileUrl,
+          invoiceId,
+          fileFormat,
+          xmlFormat,
+          keyInformation,
+          alreadyExists,
+        } = jsonResponse;
 
         const fileInfo: FileInfo = {
           url: fileUrl,
@@ -91,15 +111,17 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
           keyInformation,
           alreadyExists,
         };
-        setUploadStatus("File uploaded and processed successfully!");
+        setUploadStatus("DONE");
         setFile(null);
         onUpload(fileInfo);
       } else {
         const errorMessage = await response.text();
-        setError(`Upload failed: ${errorMessage}`);
+        setError(`${errorMessage}`);
+        setUploadStatus("NOT_STARTED");
       }
     } catch (err) {
       setError("An error occurred while uploading the file.");
+      setUploadStatus("NOT_STARTED");
     }
   };
 
@@ -128,7 +150,10 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
               <DocumentCurrencyEuroIcon className="mx-auto mb-2 h-10 w-10 text-gray-400 dark:text-gray-500" />
               <p className="text-gray-500 dark:text-gray-400">
                 {t("fileupload.drop-area-text-1")}
-                <span className="font-semibold"> {t("fileupload.drop-area-text-2")}</span>
+                <span className="font-semibold">
+                  {" "}
+                  {t("fileupload.drop-area-text-2")}
+                </span>
               </p>
             </div>
           ) : (
@@ -147,23 +172,22 @@ const FileUpload = forwardRef(({ onUpload }: FileUploadProps, ref) => {
       </Card>
 
       {/* Error Message */}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-
-      {/* Upload Status */}
-      {uploadStatus && <p className="mt-4 text-blue-500 dark:text-blue-400">{uploadStatus}</p>}
+      {error && (
+        <Alert variant="destructive" className="max-w-lg">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{t("alert.error.file-upload-header")}</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Process Button */}
       <div className="mt-6">
-        <Button
+        <AnimatedButton
+          translationIdentifier={"fileupload.process-button"}
+          progress={uploadStatus}
           onClick={uploadFile}
-          variant="default"
-          disabled={!file}
-          className={`${
-            file ? "bg-yellow-400 text-black hover:bg-yellow-500" : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          {t("fileupload.process-button")}
-        </Button>
+          disabled={file === null || error !== "" || uploadStatus !== "NOT_STARTED"}
+        />
       </div>
 
       {/* Hidden File Input */}

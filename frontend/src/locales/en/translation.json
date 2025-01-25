@@ -1,5 +1,15 @@
 {
-    "welcome": "Welcome",
+    "alert": {
+        "info": {
+            "file-exists-header": "The invoice already exists!",
+            "file-exists-message": "This invoice has already been imported into the system."
+        },
+        "error": {
+            "file-upload-header": "The file could not be processed",
+            "persist-header": "The invoice could not be saved",
+            "print": "The invoice could not be printed"
+        }
+    },
     "navbar": {
         "import": "Import",
         "invoices": "Invoices",

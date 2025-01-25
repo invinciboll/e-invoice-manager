@@ -95,7 +95,6 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
             />
             {/* Table */}
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead onClick={() => handleSort("issuedDate")}>

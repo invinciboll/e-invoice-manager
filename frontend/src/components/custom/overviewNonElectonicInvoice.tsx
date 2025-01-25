@@ -40,6 +40,7 @@ import { CalendarIcon } from "lucide-react"
 import { backendUrl } from "@/Envs"
 import { invoiceTypeMappings, useInvoiceTypeTranslator } from "@/invoiceTypesCodes"
 import { FileInfo, Progress } from "@/types"
+import AnimatedButton from "./animatedbutton"
 
 //------------------------//
 // 1) Define Zod Schema
@@ -389,23 +390,20 @@ const OverviewNEI: React.FC<OverviewNEIProps> = ({ fileInfo, handleResetPage }) 
           {/* Buttons Section */}
           <div className="flex flex-col items-center space-y-4 w-full">
             <div className="flex space-x-4 w-full justify-center">
-              <Button
+              <AnimatedButton
+                translationIdentifier={"overview.button-print"}
                 onClick={handlePrint}
-                variant="default"
-                className={`text-black w-32 ${isPrinting === "NOT_STARTED" ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-gray-500 hover:bg-gray-600'}`}
                 disabled={isPrinting === "IN_PROGRESS" || isPrinting === "DONE"}
-              >
-                {t("overview.button-print")}
-              </Button>
+                progress={isPrinting}
+              />
 
-              <Button
+              <AnimatedButton
                 type="submit"
-                variant="default"
-                className={`text-black w-32 ${isSaving === "NOT_STARTED" ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-gray-500 hover:bg-gray-600'}`}
                 disabled={isSaving === "IN_PROGRESS" || isSaving === "DONE"}
-              >
-                {t("overview.button-save")}
-              </Button>
+                progress={isSaving}
+                translationIdentifier={"overview.button-save"}
+                onClick={form.handleSubmit(onSubmit)}
+              />
             </div>
 
             <div className="w-full flex justify-center">

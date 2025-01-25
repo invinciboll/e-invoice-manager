@@ -3,6 +3,11 @@
         "info": {
             "file-exists-header": "Rechnung existiert bereits!",
             "file-exists-message": "Diese Rechnung wurde schon zu einem vorherigen Zeitpunkt in das System importiert."
+        },
+        "error": {
+            "file-upload-header": "Die Datei konnte nicht verarbeitet werden.",
+            "persist-header": "Speichern fehlgeschlagen.",
+            "print": "Drucken fehlgeschlagen."
         }
     },
     "yes": "Ja",
