@@ -86,4 +86,10 @@ public class InvoicesController {
         return ResponseEntity.ok(responseBody);
     }
 
+    @GetMapping("/sellers")
+    public ResponseEntity<?> getSellers() {
+        List<String> sellers = invoiceDao.findDistinctSellers();
+        return ResponseEntity.ok(sellers);
+    }
+
 }

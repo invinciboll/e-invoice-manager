@@ -1,6 +1,5 @@
 import FileUpload from "@/components/custom/file-upload";
 import Overview from "@/components/custom/overview";
-import OverviewNEI from "@/components/custom/overviewNonElectonicInvoice";
 import PdfViewer from "@/components/custom/pdf-viewer";
 import { FileInfo } from "@/types";
 import { useEffect, useRef, useState } from "react";

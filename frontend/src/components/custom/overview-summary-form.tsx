@@ -41,6 +41,7 @@ import { FormSchemaNormalInvoice } from "@/utils/form-schema";
 import {
     invoiceTypeMappings
 } from "@/utils/invoice-type-utils";
+import AutoCompleteInput from "./autocomplete-input";
 import { InvoiceTypeInfoSheet } from "./invoice-type-info-sheet";
 
 type SummaryFormProps = {
@@ -59,6 +60,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
     const form = useForm<z.infer<typeof FormSchemaNormalInvoice>>({
         resolver: zodResolver(FormSchemaNormalInvoice),
     });
+
 
     async function onSubmit(payload: z.infer<typeof FormSchemaNormalInvoice>) {
         try {
@@ -128,7 +130,12 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
                                                     {t("overview.table.header.invoice-seller")}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Lorem GmbH" {...field} />
+                                                    <AutoCompleteInput
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        onBlur={field.onBlur}
+                                                    />
+                                                    {/* <Input placeholder="Lorem GmbH" {...field} /> */}
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
