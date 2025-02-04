@@ -46,4 +46,38 @@ public class Util {
         
         return sanitized;
     }
+
+    /**
+     * Sanitizes a reference string by replacing any disallowed character
+     * with a hyphen (-). Allowed characters: letters, digits, hyphen (-),
+     * underscore (_), period (.), tilde (~), and space.
+     */
+    public static String sanitizeReference(String reference) {
+        if (reference == null) {
+            return null;
+        }
+        
+        // 1. Trim the input.
+        String sanitized = reference.trim();
+        
+        // 2. Replace any character that is NOT in the allowed set with a hyphen.
+        // Allowed characters: A-Z, a-z, 0-9, hyphen (-), underscore (_), period (.),
+        // tilde (~), and space.
+        sanitized = sanitized.replaceAll("[^A-Za-z0-9\\-._~ ]", "-");
+        
+        // 3. Remove any leading or trailing dots, which can cause issues on Windows.
+        sanitized = sanitized.replaceAll("^[.]+|[.]+$", "");
+        
+        // 4. If the resulting string is empty, provide a default value.
+        if (sanitized.isEmpty()) {
+            sanitized = "_na_ref_";
+        }
+        
+        // 5. (Optional) If the sanitized name is a reserved Windows file name, prefix it with an underscore.
+        if (WINDOWS_RESERVED_NAMES.contains(sanitized.toUpperCase())) {
+            sanitized = "_" + sanitized;
+        }
+        
+        return sanitized;
+    }
 }

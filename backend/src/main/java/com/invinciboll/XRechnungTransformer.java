@@ -153,7 +153,7 @@ public class XRechnungTransformer {
         }
 
         // Return successfully extracted key information
-        KeyInformation keyInformation = new KeyInformation(invoiceReference, Util.sanitizeSellerName(sellerName), invoiceTypeCode, issuedDate, totalSum);
+        KeyInformation keyInformation = new KeyInformation(Util.sanitizeReference(invoiceReference), Util.sanitizeSellerName(sellerName), invoiceTypeCode, issuedDate, totalSum);
         return keyInformation;
     }
 
