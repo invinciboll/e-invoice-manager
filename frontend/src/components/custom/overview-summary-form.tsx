@@ -196,7 +196,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
                                                             {Array.from(invoiceTypeMappings.entries()).map(([typeCode, translationIdentifier]) => {
                                                                 return (
                                                                     <SelectItem key={String(typeCode)} value={String(typeCode)}>
-                                                                        {t(translationIdentifier)} {/* Display the associated string */}
+                                                                        {t(translationIdentifier)}
                                                                     </SelectItem>
                                                                 );
                                                             })}

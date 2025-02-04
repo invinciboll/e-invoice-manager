@@ -21,19 +21,15 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.checkerframework.checker.units.qual.t;
 import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
-
-import ch.qos.logback.core.pattern.parser.Parser;
-
-import com.invinciboll.configuration.AppConfig;
-
+import com.invinciboll.util.Util;
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -157,7 +153,7 @@ public class XRechnungTransformer {
         }
 
         // Return successfully extracted key information
-        KeyInformation keyInformation = new KeyInformation(invoiceReference, sellerName, invoiceTypeCode, issuedDate, totalSum);
+        KeyInformation keyInformation = new KeyInformation(invoiceReference, Util.sanitizeSellerName(sellerName), invoiceTypeCode, issuedDate, totalSum);
         return keyInformation;
     }
 

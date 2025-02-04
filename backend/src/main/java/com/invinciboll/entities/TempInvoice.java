@@ -1,24 +1,17 @@
 package com.invinciboll.entities;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.fop.apps.FOPException;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.t;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.invinciboll.FormatDetector;
@@ -31,8 +24,8 @@ import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.exceptions.TransformationException;
+import com.invinciboll.util.Util;
 
-import ch.qos.logback.core.helpers.Transform;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -211,7 +204,7 @@ public class TempInvoice {
         // Construct KeyInformation object
         keyInformation = new KeyInformation(
             (String) userInput.get("invoiceReference"),
-            (String) userInput.get("sellerName"),
+            Util.sanitizeSellerName((String) userInput.get("sellerName")),
             invoiceTypeCode,
             invoiceDate,
             totalSum
