@@ -143,7 +143,7 @@ public class TempInvoice {
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
         Map<String, Object> response = new HashMap<>();
-        String fileUrl = "http://" + appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
+        String fileUrl = "https://" + appConfig.getBackendHost() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
         response.put("fileUrl", fileUrl);
         response.put("invoiceId", invoiceId);
         response.put("fileFormat", fileFormat.toString());

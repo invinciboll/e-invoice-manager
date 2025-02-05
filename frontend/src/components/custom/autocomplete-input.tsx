@@ -1,10 +1,9 @@
 // AutoCompleteInput.tsx
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { backendUrl } from "@/Envs";
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 // Update the interface to accept controlled props.
 interface AutoCompleteInputProps {
@@ -86,8 +85,6 @@ const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ value, onChange, 
             }
         }
     };
-
-    const { t } = useTranslation();
 
     return (
         <Popover open={isPopoverOpen}>

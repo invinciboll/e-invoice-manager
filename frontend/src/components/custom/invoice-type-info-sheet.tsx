@@ -34,7 +34,7 @@ export const InvoiceTypeInfoSheet: React.FC = () => {
                     <SheetTitle>{t("info-sheet-header")}</SheetTitle>
                     <SheetDescription>
                         <Accordion type="single" collapsible>
-                            {Array.from(invoiceTypeMappings.entries()).map(([typeCode, translationIdentifier]) => {
+                            {Array.from(invoiceTypeMappings.entries()).map(([typeCode, _]) => {
                                 return (
                                     <AccordionItem value={String(typeCode)} key={typeCode}>
                                         <AccordionTrigger className="hover:border-yellow-400">{translateInvoiceType(typeCode)}</AccordionTrigger>

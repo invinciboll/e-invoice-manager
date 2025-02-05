@@ -4,30 +4,35 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
-    ports:
-      - "${BACKEND_PORT:-4711}:${BACKEND_PORT:-4711}"
+    expose:
+      - "${BACKEND_PORT:-4711}"
     environment:
       BACKEND_PORT: 4711
-      FRONTEND_PORT: 80 #Ngnix port
-      FRONTEND_HOST: localhost
+      BACKEND_HOST: api.rechnung.invinciboll.org
+      FRONTEND_PORT: 443
+      FRONTEND_HOST: rechnung.invinciboll.org
+      OUTPUT_DIR: output
+      PRINTER_IP: 192.168.2.134
     networks:
-      - app-network
+      - caddy-proxy_caddy
+    volumes:
+      - /home/sboll/Projects/boll-it/test-output:/app/output
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_BACKEND_HOST: localhost
-        VITE_BACKEND_PORT: 4711
+        VITE_BACKEND_HOST: api.rechnung.invinciboll.org
+        VITE_BACKEND_PORT: 443
     container_name: frontend
-    ports:
-      - "80:80" # Exposed to the world
+    expose:
+      - "4712" # Exposed to the world
     depends_on:
       - backend
     networks:
-      - app-network
+      - caddy-proxy_caddy
 
 networks:
-  app-network:
-    driver: bridge
+  caddy-proxy_caddy:
+    external: true

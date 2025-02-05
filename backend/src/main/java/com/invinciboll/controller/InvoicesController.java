@@ -69,7 +69,7 @@ public class InvoicesController {
                     .body("Invoice not found in database");
         };
 
-        String fileUrl = "http://" +  appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + invoice.getGeneratedFileSavePath();
+        String fileUrl = "https://" +  appConfig.getBackendHost() + "/" + invoice.getGeneratedFileSavePath();
         Path path = Paths.get(invoice.getGeneratedFileSavePath());
 
         try {
