@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import java.time.Year;
+
 @Getter
 @Component
 public class AppConfig {
@@ -27,6 +29,9 @@ public class AppConfig {
     // Output path
     @Value("${output.dir}")
     private String outputDir;
+    public String getOutputDir() {
+        return outputDir + "/" + Year.now();
+    }
 
     @Value("${tempfiles.dir}")
     private String tempfilesDir;

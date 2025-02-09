@@ -110,14 +110,14 @@ const Navbar = () => {
                                     {t("navbar.invoices")}
                                 </Link>
                             </NavigationMenuItem>
-                            <NavigationMenuItem>
+                            {/* <NavigationMenuItem>
                                 <Link
                                     to="/dashboard"
                                     className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                                 >
                                     {t("navbar.dashboard")}
                                 </Link>
-                            </NavigationMenuItem>
+                            </NavigationMenuItem> */}
                         </NavigationMenuList>
                     </NavigationMenu>
 

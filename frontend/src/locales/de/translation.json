@@ -28,7 +28,7 @@
         "header": "Rechnung importieren",
         "subheader": "Laden Sie hier Ihre PDF- oder XML-Datei hoch",
         "drop-area-text-1": "Ziehen Sie eine Datei hierher, oder",
-        "drop-area-text-2": "klicken Sie, um sie hochzuladen",
+        "drop-area-text-2": "klicken Sie, um eine Datei auszuwählen",
         "process-button": "Verarbeiten"
     },
     "overview": {

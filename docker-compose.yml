@@ -15,6 +15,7 @@ services:
       - caddy-adguard_caddy
     volumes:
       - /mnt/data/rechnungen:/app/output
+      - /mnt/data/db:/app/data
 
   frontend:
     build:
