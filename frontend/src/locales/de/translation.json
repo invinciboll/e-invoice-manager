@@ -1,0 +1,92 @@
+{
+    "input-required": "Pflichtfeld",
+    "alert": {
+        "info": {
+            "file-exists-header": "Rechnung existiert bereits!",
+            "file-exists-message": "Diese Rechnung wurde schon zu einem vorherigen Zeitpunkt in das System importiert."
+        },
+        "error": {
+            "file-upload-header": "Die Datei konnte nicht verarbeitet werden.",
+            "persist-header": "Speichern fehlgeschlagen.",
+            "print": "Drucken fehlgeschlagen."
+        }
+    },
+    "yes": "Ja",
+    "no": "Nein",
+    "popover": {
+        "confirm-title": "Rechnung nicht gespeichert!",
+        "confirm-message": "Sind Sie sicher, dass Sie die Rechnung nicht speichern möchten?",
+        "cancel": "Abbrechen",
+        "confirm": "Schließen"
+    },
+    "navbar": {
+        "import": "Importieren",
+        "invoices": "Rechnungen",
+        "dashboard": "Analyse"
+    },
+    "fileupload": {
+        "header": "Rechnung importieren",
+        "subheader": "Laden Sie hier Ihre PDF- oder XML-Datei hoch",
+        "drop-area-text-1": "Ziehen Sie eine Datei hierher, oder",
+        "drop-area-text-2": "klicken Sie, um eine Datei auszuwählen",
+        "process-button": "Verarbeiten"
+    },
+    "overview": {
+        "header-preview": "PDF-Vorschau",
+        "key-information": "Zusammenfassung",
+        "table": {
+            "header": {
+                "invoice-is": "E-Rechnung",
+                "invoice-format": "Format",
+                "invoice-seller": "Verkäufer",
+                "invoice-number": "Rechnungsnummer",
+                "invoice-type": "Rechnungstyp",
+                "invoice-date": "Ausstellungsdatum",
+                "invoice-amount": "Gesamtbetrag"
+            }
+        },
+        "file-exists-message": "Die Datei ist bereits im System vorhanden.",
+        "button-print": "Drucken",
+        "button-save": "Speichern",
+        "button-close": "Schließen",
+        "input": {
+            "placeholder-type": "Rechnungstyp",
+            "placeholder-date": "Datum"
+        }
+    },
+    "invoices": {
+        "filter-input": "Filtern nach Verkäufer oder Referenznummer ...",
+        "table": {
+            "issue-date": "Ausstellungsdatum",
+            "seller": "Verkäufer",
+            "reference-number": "Referenznummer",
+            "type-number": "Rechnungstyp",
+            "amount": "Betrag"
+        },
+        "pagination": {
+            "previous": "Zurück",
+            "next": "Weiter"
+        }
+    },
+    "info-sheet-header": "Information zu Rechnungstypen",
+    "invoiceTypes": {
+        "partialInvoice": "Teilschlussrechnung",
+        "partialInvoice-description": "Die Teilrechnung ist eine normale Rechnung mit der eine oder mehrere erbrachte Leistungsposten abgerechnet werden. Dies ist meisten der Fall bei längeren Projekten oder z.B. gestaffelten Warenlieferungen. Im Gegensatz zu einer Abschlagsrechnung, die unabhängig von der bereits erbrachten Leistung ist, werden mit einer Teilrechnung nur tatsächlich erbrachte Leistungen abgerechnet mit allen damit verbundenen Gewährleistungspflichten.",
+        "commercialInvoice": "Rechnung",
+        "commercialInvoice-description": "Dieser Typ beschreibt den „Normalfall“ einer Waren- oder Handelsrechnung und ist der gebräuchlichste Typ für die meisten Rechnungen.",
+        "creditNote": "Gutschrift",
+        "creditNote-description": "Eine Gutschrift ist steuerrechtlich eine Rechnung, die - im Gegensatz zur Rechnung- vom Leistungsempfänger ausgestellt wird. Nicht zu verwechseln ist die Gutschrift mit einer Rechnungskorrektur die landläufig auch als „Gutschrift“ bezeichnet wird.",
+        "correctedInvoice": "Rechnungskorrektur",
+        "correctedInvoice-description": "Eine Rechnungskorrektur (oder auch Stornorechnung) wird erstellt, wenn eine Rechnung falsch erstellt wurde oder die Leistung nicht vollständig oder mangelhaft erbracht wurde und damit der Rechnungsbetrag reduziert werden muss. Eine Rechnungskorrektur muss sich dabei immer auf eine bereits erstellte Rechnung beziehen.",
+        "selfBilledInvoice": "Selbstfakturierte Rechnung",
+        "selfBilledInvoice-description": "Eine selbstfakturierte Rechnung wird vom Kunden ausgestellt. Der Lieferant erhält eine Rechnungskopie und die Zahlung von dem Kunde.",
+        "partialConstructionInvoice": "Abschlagsrechnung (Bauleistung)",
+        "partialConstructionInvoice-description": "Eine Abschlagsrechnung für Bauleistung. Eine Abschlagsrechnung hat nicht dieselbe Verbindlichkeit wie eine Teilschluss- oder Schlussrechnung.",
+        "partialFinalConstructionInvoice": "Teilschlussrechnung (Bauleistung)",
+        "partialFinalConstructionInvoice-description": "Eine Teilschlussrechnung hat denselben Charakter wie eine Schlussrechnung. Mit einer Teilschlussrechnung werden bereits geleistet Arbeiten im Rahmen einer Teilabnahme abgerechnet.",
+        "finalConstructionInvoice": "Schlussrechnung (Bauleistung)",
+        "finalConstructionInvoice-description": "Grundlage für die Schlussrechnung ist die Fertigstellung und die Abnahme der vereinbarten Leistungen zzgl. etwaiger Nachforderungen.",
+        "unknown": "Unbekannt",
+        "unknown-description": "Rechnugstyp ist dem System nicht bekannt."
+    }
+}
