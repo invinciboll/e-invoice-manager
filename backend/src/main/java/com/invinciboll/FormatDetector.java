@@ -9,7 +9,10 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
+// import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
@@ -34,7 +37,7 @@ public class FormatDetector {
         }
 
         if (isPDF(header)) {
-            if (isZUGFeRDPdf(filePath)) {
+            if (hasEmbeddedXml(filePath)) {
                 return FileFormat.ZF_PDF;
             }
             return FileFormat.PDF;
@@ -79,15 +82,35 @@ public class FormatDetector {
             && header[0] == '%' && header[1] == 'P' && header[2] == 'D' && header[3] == 'F';
     }
 
-    private static boolean isZUGFeRDPdf(String pdfPath) {
-        ZUGFeRDInvoiceImporter zii = null;
-        try {
-            zii = new ZUGFeRDInvoiceImporter(pdfPath);
-            zii.extractInvoice(); // Will fail if not a ZUGFeRD PDF
-            return true;
-        } catch (Exception e) {
-            return false;
+    private static boolean hasEmbeddedXml(String pdfPath) {
+        try (PDDocument document = PDDocument.load(new java.io.File(pdfPath))) {
+            PDDocumentCatalog catalog = document.getDocumentCatalog();
+            if (catalog == null) return false;
+
+            // check for embedded files
+            var names = catalog.getNames();
+            if (names != null && names.getEmbeddedFiles() != null) {
+                var embeddedFiles = names.getEmbeddedFiles().getNames();
+                for (var entry : embeddedFiles.entrySet()) {
+                    String fileName = entry.getKey();
+                    if (fileName.toLowerCase().endsWith(".xml")) {
+                        return true;
+                    }
+                }
+            }
+
+            // fallback: check for XML in metadata
+            PDMetadata metadata = catalog.getMetadata();
+            if (metadata != null) {
+                String meta = new String(metadata.toByteArray());
+                if (meta.contains("<CrossIndustryInvoice") || meta.contains("<Invoice")) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            // log, but don’t throw; non-ZF PDFs may not load cleanly
         }
+        return false;
     }
 
     public static XMLFormat detectXmlFormat(XdmNode xmlDocument) {

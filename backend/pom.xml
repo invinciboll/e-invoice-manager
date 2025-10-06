@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.invinciboll</groupId>
 	<artifactId>server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>server</name>
 	<description>e-invoice-manager backend</description>
 	<url/>
@@ -109,14 +109,12 @@
 			<version>2.10</version>
 		</dependency>
 
-		<!-- ZUGfeRD support-->
-		<dependency>
-		<groupId>org.mustangproject</groupId>
-		<artifactId>validator</artifactId>
-		<version>2.15.0</version>
-		<classifier>shaded</classifier>
-		</dependency>
-
+        <!-- PDFBox to extract XML from Factur-X PDFs -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.30</version>
+        </dependency>
 
 	</dependencies>
 

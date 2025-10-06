@@ -1,5 +1,6 @@
 package com.invinciboll;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
@@ -21,8 +23,13 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
+import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.checkerframework.checker.units.qual.t;
-import org.mustangproject.ZUGFeRD.ZUGFeRDInvoiceImporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,8 +75,7 @@ public class XRechnungTransformer {
         String xmlContentString;
 
         if (fileFormat == FileFormat.ZF_PDF) {
-            ZUGFeRDInvoiceImporter zii = new ZUGFeRDInvoiceImporter(inputPath.toString());
-            xmlContentString = zii.getUTF8(); // Extract XML content from ZF_PDF
+            xmlContentString = extractEmbeddedXmlFromPdf(inputPath);
         } else  {
             try{
                 xmlContentString = Files.readString(inputPath, StandardCharsets.UTF_8); // Read XML from file
@@ -84,6 +90,41 @@ public class XRechnungTransformer {
             return builder.build(new StreamSource(new StringReader(xmlContentString)));
         } catch (SaxonApiException e) {
             throw new ParserException("Unable to parse XML content", e);
+        }
+    }
+
+    private static String extractEmbeddedXmlFromPdf(Path pdfPath) throws IOException {
+        try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
+
+            PDDocumentNameDictionary names = new PDDocumentNameDictionary(document.getDocumentCatalog());
+            PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+
+            if (embeddedFiles == null) {
+                throw new IOException("No embedded files found in PDF: " + pdfPath);
+            }
+
+            Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
+            if (embeddedFileNames == null || embeddedFileNames.isEmpty()) {
+                throw new IOException("No named embedded files found in PDF: " + pdfPath);
+            }
+
+            for (Map.Entry<String, PDComplexFileSpecification> entry : embeddedFileNames.entrySet()) {
+                String fileName = entry.getKey().toLowerCase();
+                if (fileName.endsWith(".xml")) {
+                    PDComplexFileSpecification fileSpec = entry.getValue();
+
+                    // In PDFBox 3.x, use getCOSObject() to get the COSStream
+                    COSStream cosStream = fileSpec.getEmbeddedFile().getCOSObject();
+
+                    try (var inputStream = cosStream.createInputStream();
+                         var baos = new ByteArrayOutputStream()) {
+                        inputStream.transferTo(baos);
+                        return baos.toString(StandardCharsets.UTF_8);
+                    }
+                }
+            }
+
+            throw new IOException("No embedded XML file found in PDF: " + pdfPath);
         }
     }
 

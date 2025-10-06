@@ -1,0 +1,271 @@
+{
+  "ZF232": {
+    "BASIC-WL_Einfach.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Basic simple Factur-X invoice with WL profile"
+    },
+    "BASIC_Einfach.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Basic simple Factur-X invoice"
+    },
+    "BASIC_Rechnungskorrektur.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Basic Factur-X credit note / correction invoice"
+    },
+    "BASIC_Taxifahrt.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Basic taxi ride invoice"
+    },
+    "EN16931_1_Teilrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 partial invoice part 1"
+    },
+    "EN16931_2_Teilrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 partial invoice part 2"
+    },
+    "EN16931_AbweichenderZahlungsempfaenger.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 invoice with different payment recipient"
+    },
+    "EN16931_Betriebskostenabrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Operating cost settlement invoice"
+    },
+    "EN16931_Betriebskostenabrechnung_Abrechnung 2010.pdf": {
+      "file_type": "plain-pdf",
+      "xml_type": "",
+      "description": "Old or plain-pdf operating cost settlement (2010)"
+    },
+    "EN16931_Einfach.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 simple invoice"
+    },
+    "EN16931_Einfach_DueDate.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 simple invoice with payment due date"
+    },
+    "EN16931_Einfach_negativePaymentDue.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 invoice with negative payment due test case"
+    },
+    "EN16931_Elektron.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 electronic goods invoice"
+    },
+    "EN16931_ElektronischeAdresse.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 invoice with electronic address"
+    },
+    "EN16931_Elektron_ElektronRapport.pdf": {
+      "file_type": "plain-pdf",
+      "xml_type": "",
+      "description": "plain-pdf invoice with mixed electronic report"
+    },
+    "EN16931_Gutschrift.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "EN16931 credit note"
+    },
+    "EN16931_Haftpflichtversicherung_Versicherungssteuer.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Liability insurance invoice with insurance tax"
+    },
+    "EN16931_Innergemeinschaftliche_Lieferungen.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Intra-community supply invoice"
+    },
+    "EN16931_Kraftfahrversicherung_Bruttopreise.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Motor insurance invoice with gross prices"
+    },
+    "EN16931_Miete.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Rental invoice"
+    },
+    "EN16931_OEPNV.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Public transport (ÖPNV) invoice"
+    },
+    "EN16931_Physiotherapeut.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Physiotherapy service invoice"
+    },
+    "EN16931_Rabatte.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Invoice with discounts"
+    },
+    "EN16931_Rechnungskorrektur.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Invoice correction (credit note)"
+    },
+    "EN16931_RechnungsUebertragung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Invoice forwarding or transmission"
+    },
+    "EN16931_Reisekostenabrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Travel expense reimbursement invoice"
+    },
+    "EN16931_Reisekostenabrechnung_Hotelrechnung-Immo.pdf": {
+      "file_type": "plain-pdf",
+      "xml_type": "",
+      "description": "plain-pdf travel expense invoice (hotel/immo)"
+    },
+    "EN16931_Reisekostenabrechnung_Taxi-Nue-und-Berlin.pdf": {
+      "file_type": "plain-pdf",
+      "xml_type": "",
+      "description": "plain-pdf travel expense invoice (taxi test)"
+    },
+    "EN16931_Sachversicherung_berechneter_Steuersatz.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Property insurance invoice with calculated tax rate"
+    },
+    "EN16931_SEPA_Prenotification.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Invoice containing SEPA prenotification"
+    },
+    "EXTENDED_Fremdwaehrung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended profile invoice with foreign currency"
+    },
+    "EXTENDED_InnergemeinschLieferungMehrereBestellungen.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended invoice with multiple intra-EU orders"
+    },
+    "EXTENDED_Kostenrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended cost accounting invoice"
+    },
+    "EXTENDED_Projektabschlussrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended final project settlement invoice"
+    },
+    "EXTENDED_Rechnungskorrektur.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended correction invoice"
+    },
+    "EXTENDED_Warenrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Extended goods invoice"
+    },
+    "MINIMUM_Buchungshilfe.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Minimum profile booking assistance invoice"
+    },
+    "MINIMUM_Rechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "Minimum profile simple invoice"
+    },
+    "XRECHNUNG_Betriebskostenabrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "XRechnung operating cost settlement"
+    },
+    "XRECHNUNG_Einfach.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "XRechnung simple invoice"
+    },
+    "XRECHNUNG_Elektron.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "XRechnung electronic invoice"
+    },
+    "XRECHNUNG_Reisekostenabrechnung.pdf": {
+      "file_type": "factur-x",
+      "xml_type": "CII",
+      "description": "XRechnung travel expense invoice"
+    }
+  },
+  "xrechnung-visualization": {
+    "direct-debit-bt-90-payee_creditnote.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_CREDIT_NOTE",
+      "description": "UBL credit note with direct debit (payee side)"
+    },
+    "direct-debit-bt-90-payee_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "UBL invoice with direct debit (payee side)"
+    },
+    "direct-debit-bt-90-seller_creditnote.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_CREDIT_NOTE",
+      "description": "UBL credit note with direct debit (seller side)"
+    },
+    "direct-debit-bt-90-seller_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "UBL invoice with direct debit (seller side)"
+    },
+    "embedded-documents-bt-125_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "UBL invoice with embedded document (BT-125)"
+    },
+    "embedded-documents-with-newline-and-whitespace_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "UBL invoice with embedded docs containing whitespace"
+    },
+    "itemAttributes_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "UBL invoice with detailed item attributes"
+    },
+    "maxRechnung_creditnote.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_CREDIT_NOTE",
+      "description": "Maximum test case credit note"
+    },
+    "maxRechnung_ubl.xml": {
+      "file_type": "xml",
+      "xml_type": "UBL_INVOICE",
+      "description": "Maximum test case invoice"
+    },
+    "wrong-date-with-text-uncefact.xml": {
+      "file_type": "xml",
+      "xml_type": "CII",
+      "description": "CII invoice with plain-pdf textual date field"
+    },
+    "wrong-date-with-zeros-uncefact.xml": {
+      "file_type": "xml",
+      "xml_type": "CII",
+      "description": "CII invoice with zero-padded plain-pdf date"
+    }
+  }
+}
