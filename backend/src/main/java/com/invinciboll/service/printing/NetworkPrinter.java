@@ -1,4 +1,4 @@
-package com.invinciboll;
+package com.invinciboll.service.printing;
 
 import java.io.File;
 import java.io.FileInputStream;

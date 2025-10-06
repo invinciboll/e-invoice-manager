@@ -1,4 +1,4 @@
-package com.invinciboll;
+package com.invinciboll.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

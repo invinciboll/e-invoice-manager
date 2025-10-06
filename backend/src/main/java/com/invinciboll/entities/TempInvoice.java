@@ -1,38 +1,32 @@
 package com.invinciboll.entities;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.fop.apps.FOPException;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.t;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.invinciboll.FormatDetector;
-import com.invinciboll.KeyInformation;
-import com.invinciboll.NetworkPrinter;
-import com.invinciboll.XRechnungTransformer;
 import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.exceptions.TransformationException;
+import com.invinciboll.service.printing.NetworkPrinter;
+import com.invinciboll.service.xrechnung.XRechnungExtractor;
+import com.invinciboll.service.xrechnung.XRechnungParser;
+import com.invinciboll.service.xrechnung.XRechnungTransformer;
+import com.invinciboll.service.xrechnung.XRechnungVisualizer;
+import com.invinciboll.util.Utils;
 
-import ch.qos.logback.core.helpers.Transform;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -69,10 +63,16 @@ public class TempInvoice {
     private KeyInformation keyInformation;
 
     private AppConfig appConfig;
+    private XRechnungExtractor extractor;
+    private XRechnungParser parser;
+    private XRechnungTransformer transformer;
 
-    public TempInvoice(AppConfig appConfig){
+    public TempInvoice(AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer) {
         this.invoiceId = UUID.randomUUID();
         this.appConfig = appConfig;
+        this.extractor = extractor;
+        this.parser = parser;
+        this.transformer = transformer;
 
         String tempfiles = appConfig.getTempfilesDir();
         tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
@@ -95,8 +95,8 @@ public class TempInvoice {
 
 
     public void process() throws IOException, ParserException, TransformationException, IllegalArgumentException {
-        fileFormat = FormatDetector.detectFileFormat(tempOriginalFilePath);
-        fileHash = FormatDetector.computeFileHash(tempOriginalFilePath, "SHA-256");
+        fileFormat = extractor.detectFileFormat(tempOriginalFilePath);
+        fileHash = Utils.computeFileHash(tempOriginalFilePath);
 
         switch (fileFormat) {
             case PDF:
@@ -120,15 +120,22 @@ public class TempInvoice {
 
     private void processElectronicInvoice() throws ParserException, TransformationException {
         try {
-            xmlContent = XRechnungTransformer.parseXmlContent(tempOriginalFilePath, fileFormat);
-            xmlFormat = FormatDetector.detectXmlFormat(xmlContent);
+            xmlContent = extractor.parseXmlContent(tempOriginalFilePath, fileFormat);
+            xmlFormat = extractor.detectXmlFormat(xmlContent);
         } catch (IOException | ParserException | IllegalArgumentException e) {
             throw new ParserException("Error parsing XML content: " + e.getMessage(), e);
         }
 
+        // Validate the XML
+        // Collect Validation Warnings and Errors
+        // Return them to the Frontend, also Save them in the DB together with the Invoice
+
         try {
-            xrContent = XRechnungTransformer.transformToXR(xmlContent, xmlFormat);
-            foContent = XRechnungTransformer.transformToFO(xrContent);
+            System.out.println("Starting Transformation...");
+            xrContent = transformer.xmlToXr(xmlContent, xmlFormat);
+            System.out.println("XR Content generated.");
+            foContent = transformer.xrToFo(xrContent);
+            System.out.println("FO Content generated.");
         } catch (SaxonApiException e) {
             throw new TransformationException("Error transforming to intermediate representation: " + e.getMessage(), e);
         }
@@ -136,12 +143,13 @@ public class TempInvoice {
         tempGenerateFileName = "gen_" + this.invoiceId.toString() + ".pdf";
         tempGeneratedFilePath = tempFilesPath.resolve(tempGenerateFileName);
         try {
-            XRechnungTransformer.renderPDF(foContent, tempGeneratedFilePath.toString());
+            XRechnungVisualizer.renderPDF(foContent, tempGeneratedFilePath.toString());
+            System.out.println("PDF Content generated.");
         } catch (IOException | SaxonApiException | FOPException e) {
             throw new TransformationException("Error rendering output PDF file: " + e.getMessage(),  e);
         }
 
-        keyInformation = XRechnungTransformer.extractKeyInformation(xrContent);
+        keyInformation = parser.extractKeyInformation(xrContent);
     }
 
     private boolean checkIfInvoiceExists(InvoiceDao invoiceDao) {

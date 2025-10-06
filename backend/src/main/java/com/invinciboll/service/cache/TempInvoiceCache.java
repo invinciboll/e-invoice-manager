@@ -1,4 +1,11 @@
-package com.invinciboll;
+package com.invinciboll.service.cache;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.stereotype.Component;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -6,11 +13,7 @@ import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 import com.invinciboll.entities.TempInvoice;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+@Component
 public class TempInvoiceCache {
 
     private final Cache<UUID, TempInvoice> cache;

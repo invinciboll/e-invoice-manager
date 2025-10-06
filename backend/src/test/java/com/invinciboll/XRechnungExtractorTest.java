@@ -1,19 +1,29 @@
 package com.invinciboll;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.nio.file.Path;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
+import com.invinciboll.service.xrechnung.XRechnungExtractor;
 import com.invinciboll.util.InvoiceLoader;
 
 import net.sf.saxon.s9api.XdmNode;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+@SpringBootTest
+class XRechnungExtractorTest {
 
-import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-class FormatDetectorTest {
+    @Autowired
+    private XRechnungExtractor extractor; // the Spring-managed bean
 
     /**
      * Uses InvoiceLoader to supply all test files automatically.
@@ -26,7 +36,7 @@ class FormatDetectorTest {
         Path path = Path.of("src/test/resources/testfiles", testFile.category, testFile.fileName);
         assertTrue(path.toFile().exists(), "Test file should exist: " + path);
         try {
-            var format = FormatDetector.detectFileFormat(path);
+            var format = extractor.detectFileFormat(path);
 
             switch (testFile.fileType) {
                 case "xml":
@@ -48,7 +58,6 @@ class FormatDetectorTest {
         }
     }
 
-
     @ParameterizedTest(name = "Test {index}: {0} → expecting {1}")
     @MethodSource("com.invinciboll.util.InvoiceLoader#getAllValidInvoiceTestFiles")
     void testDetectXmlFormat(InvoiceLoader.TestFile testFile) {
@@ -60,10 +69,10 @@ class FormatDetectorTest {
         try {
             assertTrue(path.toFile().exists(), "Test file should exist: " + path);
 
-            XdmNode xmlDocument = XRechnungTransformer.parseXmlContent(path, fileFormat);
+            XdmNode xmlDocument = extractor.parseXmlContent(path, fileFormat);
             assertNotNull(xmlDocument, "Parsed XML document should not be null");
 
-            XMLFormat detectedFormat = FormatDetector.detectXmlFormat(xmlDocument);
+            XMLFormat detectedFormat = extractor.detectXmlFormat(xmlDocument);
             assertEquals(expectedXmlFormat, detectedFormat,
                     "Detected XML format should match expected for " + testFile.fileName);
         } catch (Exception e) {

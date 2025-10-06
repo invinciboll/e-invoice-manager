@@ -53,4 +53,4 @@ public class InvoiceEntity {
         this.issuedDate = issuedDate;
         this.totalSum = totalSum;
     }
-}  
+}

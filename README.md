@@ -15,3 +15,9 @@
 - React
 - Typescript + SWE
 - ShadCN + Tailwind + Heroicons
+
+
+
+# Kosit validator
+# kosit valudators schemes
+# kosit generator
