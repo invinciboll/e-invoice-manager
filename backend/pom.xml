@@ -123,6 +123,13 @@
             <version>1.5.2</version>
         </dependency>
 
+        <!-- JAXB runtime for XML binding (required by validator dependency for Java 9 and above) -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>4.0.5</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>

@@ -1,6 +1,3 @@
 [submodule "backend/xrechnung-visualization"]
 	path = backend/xrechnung-visualization
 	url = https://github.com/itplr-kosit/xrechnung-visualization.git
-[submodule "backend/validator-configuration-xrechnung"]
-	path = backend/validator-configuration-xrechnung
-	url = https://github.com/itplr-kosit/validator-configuration-xrechnung.git

@@ -3,6 +3,11 @@
 git clone --recurse-submodules --remote-submodules https://github.com/invinciboll/e-invoice-manager.git
 ```
 
+```
+curl -L "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/release-2025-03-21/validator-configuration-xrechnung_3.0.2_2025-03-21.zip" --output validator-configuration.zip && unzip validator-configuration.zip -d backend/validator-config && rm validator-configuration.zip
+```
+
+
 # KoSIT Submodules
 This project uses KoSIT projects, to validate and visualize e-invoices. The following projects are used as git submodules:
 
