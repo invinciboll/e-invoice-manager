@@ -12,7 +12,7 @@ type SummaryTableProps = {
 
 
 export const SummaryTable: React.FC<SummaryTableProps> = ({ fileInfo }) => {
-    const { translateInvoiceType, getInvoiceTypeDescription } = useInvoiceTypeTranslator();
+    const { translateInvoiceType } = useInvoiceTypeTranslator();
     const { t } = useTranslation();
 
     function isElectronicInvoice(): boolean {

@@ -63,6 +63,12 @@ public class InvoiceDaoImpl implements InvoiceDao {
         return count != null && count > 0;
     }
 
+    @Override
+    public List<String> findDistinctSellers() {
+        String sql = "SELECT DISTINCT seller_name FROM InvoiceEntity";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
     private static class InvoiceRowMapper implements RowMapper<InvoiceEntity> {
         @Override
         public InvoiceEntity mapRow(ResultSet rs, int rowNum) throws SQLException {

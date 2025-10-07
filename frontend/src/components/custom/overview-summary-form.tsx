@@ -41,6 +41,7 @@ import { FormSchemaNormalInvoice } from "@/utils/form-schema";
 import {
     invoiceTypeMappings
 } from "@/utils/invoice-type-utils";
+import AutoCompleteInput from "./autocomplete-input";
 import { InvoiceTypeInfoSheet } from "./invoice-type-info-sheet";
 
 type SummaryFormProps = {
@@ -59,6 +60,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
     const form = useForm<z.infer<typeof FormSchemaNormalInvoice>>({
         resolver: zodResolver(FormSchemaNormalInvoice),
     });
+
 
     async function onSubmit(payload: z.infer<typeof FormSchemaNormalInvoice>) {
         try {
@@ -128,7 +130,12 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
                                                     {t("overview.table.header.invoice-seller")}
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Lorem GmbH" {...field} />
+                                                    <AutoCompleteInput
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                        onBlur={field.onBlur}
+                                                    />
+                                                    {/* <Input placeholder="Lorem GmbH" {...field} /> */}
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -189,7 +196,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
                                                             {Array.from(invoiceTypeMappings.entries()).map(([typeCode, translationIdentifier]) => {
                                                                 return (
                                                                     <SelectItem key={String(typeCode)} value={String(typeCode)}>
-                                                                        {t(translationIdentifier)} {/* Display the associated string */}
+                                                                        {t(translationIdentifier)}
                                                                     </SelectItem>
                                                                 );
                                                             })}
@@ -279,7 +286,7 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ fileInfo, formId, upda
                                                         placeholder={i18n.language === "en" ? "€ 0.00" : "0.00 €"}
                                                         decimalsLimit={2}
                                                         decimalScale={2}
-                                                        onValueChange={(value, name, values) => field.onChange(values?.float)}
+                                                        onValueChange={(_value, _name, values) => field.onChange(values?.float)}
                                                         className={cn(
                                                             "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
                                                         )}

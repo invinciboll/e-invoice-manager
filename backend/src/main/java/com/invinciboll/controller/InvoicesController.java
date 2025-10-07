@@ -69,7 +69,7 @@ public class InvoicesController {
                     .body("Invoice not found in database");
         };
 
-        String fileUrl = "http://" +  appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + invoice.getGeneratedFileSavePath();
+        String fileUrl = "https://" +  appConfig.getBackendHost() + "/" + invoice.getGeneratedFileSavePath();
         Path path = Paths.get(invoice.getGeneratedFileSavePath());
 
         try {
@@ -84,6 +84,12 @@ public class InvoicesController {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("fileUrl", fileUrl);
         return ResponseEntity.ok(responseBody);
+    }
+
+    @GetMapping("/sellers")
+    public ResponseEntity<?> getSellers() {
+        List<String> sellers = invoiceDao.findDistinctSellers();
+        return ResponseEntity.ok(sellers);
     }
 
 }

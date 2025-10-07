@@ -9,6 +9,8 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/solid"; // Import icons f
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next"; // Import translation hook
 import { Link, useLocation, useNavigate } from "react-router-dom"; // Import Link from React Router
+import logo from '@/assets/logo.png';
+
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -68,7 +70,7 @@ const Navbar = () => {
                 {/* Logo Section */}
                 <div>
                     <img
-                        src="src/assets/logo.png"
+                        src={logo}
                         alt="MyApp Logo"
                         className="h-10 w-auto"
                     />
@@ -108,14 +110,14 @@ const Navbar = () => {
                                     {t("navbar.invoices")}
                                 </Link>
                             </NavigationMenuItem>
-                            <NavigationMenuItem>
+                            {/* <NavigationMenuItem>
                                 <Link
                                     to="/dashboard"
                                     className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                                 >
                                     {t("navbar.dashboard")}
                                 </Link>
-                            </NavigationMenuItem>
+                            </NavigationMenuItem> */}
                         </NavigationMenuList>
                     </NavigationMenu>
 

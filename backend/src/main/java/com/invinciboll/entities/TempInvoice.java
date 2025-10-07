@@ -26,6 +26,7 @@ import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
 import com.invinciboll.service.xrechnung.XRechnungVisualizer;
 import com.invinciboll.util.Utils;
+import com.invinciboll.util.Util;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -158,7 +159,7 @@ public class TempInvoice {
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
         Map<String, Object> response = new HashMap<>();
-        String fileUrl = "http://" + appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
+        String fileUrl = "https://" + appConfig.getBackendHost() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
         response.put("fileUrl", fileUrl);
         response.put("invoiceId", invoiceId);
         response.put("fileFormat", fileFormat.toString());
@@ -218,8 +219,8 @@ public class TempInvoice {
 
         // Construct KeyInformation object
         keyInformation = new KeyInformation(
-            (String) userInput.get("invoiceReference"),
-            (String) userInput.get("sellerName"),
+            Util.sanitizeReference((String) userInput.get("invoiceReference")),
+            Util.sanitizeSellerName((String) userInput.get("sellerName")),
             invoiceTypeCode,
             invoiceDate,
             totalSum

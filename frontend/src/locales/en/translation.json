@@ -6,10 +6,18 @@
             "file-exists-message": "This invoice has already been imported into the system."
         },
         "error": {
-            "file-upload-header": "The file could not be processed",
-            "persist-header": "The invoice could not be saved",
-            "print": "The invoice could not be printed"
+            "file-upload-header": "The file could not be processed.",
+            "persist-header": "Saving failed.",
+            "print": "Printing failed."
         }
+    },
+    "yes": "Yes",
+    "no": "No",
+    "popover": {
+        "confirm-title": "Invoice not saved!",
+        "confirm-message": "Are you sure you don't want to save the invoice?",
+        "cancel": "Cancel",
+        "confirm": "Close"
     },
     "navbar": {
         "import": "Import",
@@ -39,7 +47,12 @@
         },
         "file-exists-message": "The file already exists in the system.",
         "button-print": "Print",
-        "button-save": "Save"
+        "button-save": "Save",
+        "button-close": "Close",
+        "input": {
+            "placeholder-type": "Invoice Type",
+            "placeholder-date": "Date"
+        }
     },
     "invoices": {
         "filter-input": "Filter by seller or reference number ...",
@@ -55,15 +68,25 @@
             "next": "Next"
         }
     },
+    "info-sheet-header": "Information on Invoice Types",
     "invoiceTypes": {
-        "partialInvoice": "Partial invoice",
-        "commercialInvoice": "Commercial invoice",
-        "correctedInvoice": "Corrected invoice",
-        "selfBilledInvoice": "Self-billed invoice",
-        "creditNote": "Credit note",
-        "partialConstructionInvoice": "Partial construction invoice",
-        "partialFinalConstructionInvoice": "Partial final construction invoice",
-        "finalConstructionInvoice": "Final construction invoice",
-        "unknown": "Unknown invoice type"
+        "partialInvoice": "Partial Invoice",
+        "partialInvoice-description": "A partial invoice is a standard invoice that covers one or more completed service items. This is common for long-term projects or staggered deliveries of goods. Unlike a progress payment invoice, which is independent of actual services provided, a partial invoice only includes charges for services that have been performed, along with associated warranty obligations.",
+        "commercialInvoice": "Commercial Invoice",
+        "commercialInvoice-description": "This type represents the 'standard' goods or trade invoice and is the most commonly used type of invoice.",
+        "creditNote": "Credit Note",
+        "creditNote-description": "A credit note is legally considered an invoice that, unlike a standard invoice, is issued by the recipient of the service. It should not be confused with an invoice correction, which is often informally referred to as a credit note.",
+        "correctedInvoice": "Corrected Invoice",
+        "correctedInvoice-description": "A corrected invoice (also called a cancellation invoice) is issued when an original invoice contains errors or when the service was not fully or properly delivered, requiring a reduction in the invoice amount. A corrected invoice must always reference an existing invoice.",
+        "selfBilledInvoice": "Self-Billed Invoice",
+        "selfBilledInvoice-description": "A self-billed invoice is issued by the customer. The supplier receives a copy of the invoice and the payment from the customer.",
+        "partialConstructionInvoice": "Partial Construction Invoice",
+        "partialConstructionInvoice-description": "A partial invoice for construction work. A partial invoice does not have the same legal binding effect as a final invoice.",
+        "partialFinalConstructionInvoice": "Partial Final Construction Invoice",
+        "partialFinalConstructionInvoice-description": "A partial final invoice has the same status as a final invoice. It is used to invoice work that has been accepted as part of a partial completion process.",
+        "finalConstructionInvoice": "Final Construction Invoice",
+        "finalConstructionInvoice-description": "The basis for a final invoice is the completion and acceptance of the agreed services, including any additional claims.",
+        "unknown": "Unknown",
+        "unknown-description": "The invoice type is not recognized by the system."
     }
 }

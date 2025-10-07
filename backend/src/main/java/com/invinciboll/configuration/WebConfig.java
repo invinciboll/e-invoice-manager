@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         String frontendPort = appConfig.getFrontendPort();
         String frontendHost = appConfig.getFrontendHost();
-        String frontendURL = "http://" + frontendHost + ":" + frontendPort;
+        String frontendURL = "https://" + frontendHost;
 
         logger.info("Frontend URL configured for CORS: {}", frontendURL);
 

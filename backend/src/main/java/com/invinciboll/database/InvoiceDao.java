@@ -12,5 +12,6 @@ public interface InvoiceDao {
     void deleteById(UUID invoiceId);
 
     boolean existsByFileHash(String fileHash);
+    List<String> findDistinctSellers();
 
 }
