@@ -2,10 +2,12 @@
 
 *.db
 
-backend/output
-backend/tempfiles
-backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
-backend/target/maven-status/maven-compiler-plugin/compile/default-compile
+/backend/output
+/backend/tempfiles
+/backend/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
+/backend/target/maven-status/maven-compiler-plugin/compile/default-compile
 
 ZF232_EN.zip
 ZF232_EN/
+
+/backend/validator-configuration-xrechnung/
