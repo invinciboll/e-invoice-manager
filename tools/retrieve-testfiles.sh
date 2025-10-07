@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script can be used to extract the example invoices from the Zugferd testfiles zip
+# and clean up the directory structure by removing unnecessary files and directories.
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <zipfile> [output_directory]"
     exit 1

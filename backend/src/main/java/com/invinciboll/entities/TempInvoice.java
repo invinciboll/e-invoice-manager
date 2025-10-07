@@ -26,7 +26,6 @@ import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
 import com.invinciboll.service.xrechnung.XRechnungVisualizer;
 import com.invinciboll.util.Utils;
-import com.invinciboll.util.Utils;
 
 import lombok.Getter;
 import lombok.Setter;
