@@ -116,6 +116,13 @@
             <version>2.0.30</version>
         </dependency>
 
+        <!-- Validator to validate XML files against XSD schemas -->
+        <dependency>
+            <groupId>org.kosit</groupId>
+            <artifactId>validator</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>

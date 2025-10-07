@@ -7,8 +7,8 @@ git clone --recurse-submodules --remote-submodules https://github.com/invincibol
 This project uses KoSIT projects, to validate and visualize e-invoices. The following projects are used as git submodules:
 
 - [xrechnung-visualization](https://github.com/itplr-kosit/xrechnung-visualization.git) (Apache 2.0 License)
-- [validator](https://github.com/itplr-kosit/validator.git) (Apache 2.0 License)
 - [validator-configuration-xrechnung](https://github.com/itplr-kosit/validator-configuration-xrechnung.git) (Apache 2.0 License)
+- ~~[validator](https://github.com/itplr-kosit/validator.git)~~ (Apache 2.0 License) (Using mvn dependency instead)
 
 
 ### Run Dev Env

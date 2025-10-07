@@ -58,6 +58,10 @@ class XRechnungExtractorTest {
         }
     }
 
+    /**
+     * Uses InvoiceLoader to supply all valid (XML/ZF) test files automatically.
+     * Tests XML format detection for various invoice XML types.
+     */
     @ParameterizedTest(name = "Test {index}: {0} → expecting {1}")
     @MethodSource("com.invinciboll.util.InvoiceLoader#getAllValidInvoiceTestFiles")
     void testDetectXmlFormat(InvoiceLoader.TestFile testFile) {
