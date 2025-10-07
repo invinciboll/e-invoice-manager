@@ -26,7 +26,7 @@ import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
 import com.invinciboll.service.xrechnung.XRechnungVisualizer;
 import com.invinciboll.util.Utils;
-import com.invinciboll.util.Util;
+import com.invinciboll.util.Utils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -219,8 +219,8 @@ public class TempInvoice {
 
         // Construct KeyInformation object
         keyInformation = new KeyInformation(
-            Util.sanitizeReference((String) userInput.get("invoiceReference")),
-            Util.sanitizeSellerName((String) userInput.get("sellerName")),
+            Utils.sanitizeReference((String) userInput.get("invoiceReference")),
+            Utils.sanitizeSellerName((String) userInput.get("sellerName")),
             invoiceTypeCode,
             invoiceDate,
             totalSum
