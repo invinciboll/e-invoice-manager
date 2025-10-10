@@ -24,7 +24,7 @@ public class InvoiceEntity {
     private LocalDate issuedDate; // Dates represented as LocalDate
     private BigDecimal totalSum; // Precise monetary values
 
-    public InvoiceEntity(TempInvoice invoice, Path originalFileOutputPath, Path generatedFileOutputPath) {
+    public InvoiceEntity(Invoice invoice, Path originalFileOutputPath, Path generatedFileOutputPath) {
         this.invoiceId = invoice.getInvoiceId();
         this.fileHash = invoice.getFileHash();
         this.originalFileSavePath = originalFileOutputPath.toString()   ;

@@ -13,11 +13,13 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.springframework.stereotype.Component;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
+@Component
 public class XRechnungVisualizer {
     private static final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI()); // FOP Factory
 
@@ -30,7 +32,7 @@ public class XRechnungVisualizer {
      * @throws FOPException  If an error occurs during PDF rendering.
      * @throws SaxonApiException If an error occurs during serialization of the XDM node.
      */
-    public static void renderPDF(XdmNode foInput, String outputPDFPath) throws IOException, FOPException, SaxonApiException {
+    public void renderPDF(XdmNode foInput, String outputPDFPath) throws IOException, FOPException, SaxonApiException {
         File tempFOFile = File.createTempFile("temp-output", ".fo");
         try (OutputStream foOut = new FileOutputStream(tempFOFile)) {
             Serializer serializer = foInput.getProcessor().newSerializer(foOut);

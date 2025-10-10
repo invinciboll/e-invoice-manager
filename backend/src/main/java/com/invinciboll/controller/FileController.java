@@ -14,38 +14,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
-import com.invinciboll.entities.TempInvoice;
+import com.invinciboll.entities.Invoice;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.exceptions.CauseRetriever;
 import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.exceptions.TransformationException;
 import com.invinciboll.service.cache.TempInvoiceCache;
-import com.invinciboll.service.xrechnung.XRechnungExtractor;
-import com.invinciboll.service.xrechnung.XRechnungParser;
-import com.invinciboll.service.xrechnung.XRechnungTransformer;
-import com.invinciboll.service.xrechnung.XRechnungValidator;
+import com.invinciboll.service.processing.FileService;
+import com.invinciboll.service.processing.InvoiceProcessingService;
 
 @RestController
 public class FileController {
     private final TempInvoiceCache tempInvoiceCache;
     private final InvoiceDao invoiceDao;
-    private final AppConfig appConfig;
-    private final XRechnungExtractor extractor;
-    private final XRechnungParser parser;
-    private final XRechnungTransformer transformer;
-    private final XRechnungValidator validator;
+    private final InvoiceProcessingService invoiceProcessingService;
+    private final FileService fileService;
 
     @Autowired
-    public FileController(TempInvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer, XRechnungValidator validator) {
+    public FileController(TempInvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, InvoiceProcessingService invoiceProcessingService, FileService fileService) {
         this.tempInvoiceCache = tempInvoiceCache;
         this.invoiceDao = invoiceDao;
-        this.appConfig = appConfig;
-        this.extractor = extractor;
-        this.parser = parser;
-        this.transformer = transformer;
-        this.validator = validator;
+        this.invoiceProcessingService = invoiceProcessingService;
+        this.fileService = fileService;
     }
 
     @PostMapping("/upload")
@@ -61,25 +52,24 @@ public class FileController {
                     .body("File format is invalid, must be PDF or XML.");
         }
 
-        TempInvoice temporaryInvoice = new TempInvoice(appConfig, extractor, parser, transformer, validator);
-
+        Invoice tempInvoice;
         try {
-            temporaryInvoice.setFile(uploadedFile);
+           tempInvoice = invoiceProcessingService.createNewInvoice(uploadedFile);
         } catch (IOException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to create temporary files: " + e.getMessage());
+                    .body("Error saving uploaded file: " + CauseRetriever.getRootCause(e));
         }
 
+
         try {
-            temporaryInvoice.process();
+            invoiceProcessingService.processInvoice(tempInvoice);
         } catch (ParserException | IOException | TransformationException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing invoice: " + CauseRetriever.getRootCause(e));
         }
 
-        tempInvoiceCache.put(temporaryInvoice);
-
-        Map<String, Object> responseBody = temporaryInvoice.prepareJSONResponse(invoiceDao);
+        tempInvoiceCache.put(tempInvoice);
+        Map<String, Object> responseBody = invoiceProcessingService.prepareJSONResponse(invoiceDao, tempInvoice);
         return ResponseEntity.ok(responseBody);
     }
 
@@ -97,7 +87,7 @@ public class FileController {
                     .body("Invalid invoice ID format: " + e.getMessage());
         }
 
-        TempInvoice invoice = tempInvoiceCache.get(invoiceId);
+        Invoice invoice = tempInvoiceCache.get(invoiceId);
         if (invoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Invoice not in cache. Try to upload/import the file again.");
@@ -114,7 +104,7 @@ public class FileController {
         }
 
         try {
-            invoice.persist(invoiceDao);
+            invoiceProcessingService.persist(invoiceDao, invoice);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to persist invoice: " + e.getMessage());
@@ -135,14 +125,14 @@ public class FileController {
                     .body("Invalid invoice ID format.");
         }
 
-        TempInvoice invoice = tempInvoiceCache.get(invoiceId);
+        Invoice invoice = tempInvoiceCache.get(invoiceId);
         if (invoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("Invoice not in cache. Try to upload/import the file again.");
         }
 
         try {
-            invoice.print();
+            fileService.print(invoice.getTempGeneratedFilePath());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to print invoice: " + e.getMessage());

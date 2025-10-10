@@ -1,7 +1,5 @@
 package com.invinciboll.service.xrechnung;
 
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.List;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
 
 import com.invinciboll.configuration.AppConfig;
 

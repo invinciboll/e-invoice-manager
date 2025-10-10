@@ -6,11 +6,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.file.Path;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.invinciboll.configuration.AppConfig;
+
+@Component
 public class NetworkPrinter {
-    public static void print(String printerIp, Integer printerPort, String filePath) throws IOException {
+    private final String printerIp;
+    private final Integer printerPort;
+
+    @Autowired
+    public NetworkPrinter(AppConfig appConfig) {
+        this.printerIp = appConfig.getPrinterIp();
+        this.printerPort = appConfig.getPrinterPort();
+    }
+
+    public void print(Path filePath) throws IOException {
         try (Socket socket = new Socket(printerIp, printerPort);
-             FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+             FileInputStream fileInputStream = new FileInputStream(filePath.toFile());
              OutputStream outputStream = socket.getOutputStream()) {
 
             byte[] buffer = new byte[1024];

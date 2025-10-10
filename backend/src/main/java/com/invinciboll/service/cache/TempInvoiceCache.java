@@ -11,20 +11,20 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
-import com.invinciboll.entities.TempInvoice;
+import com.invinciboll.entities.Invoice;
 
 @Component
 public class TempInvoiceCache {
 
-    private final Cache<UUID, TempInvoice> cache;
+    private final Cache<UUID, Invoice> cache;
 
     public TempInvoiceCache() {
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(24, TimeUnit.HOURS) // Set expiration time
                 .maximumSize(50)                     // Set max cache size
-                .removalListener(new RemovalListener<UUID, TempInvoice>() {
+                .removalListener(new RemovalListener<UUID, Invoice>() {
                     @Override
-                    public void onRemoval(UUID key, TempInvoice invoice, RemovalCause cause) {
+                    public void onRemoval(UUID key, Invoice invoice, RemovalCause cause) {
                         if (invoice != null) {
                             // Perform cleanup for temp files
                             deleteTempFile(invoice.getTempGeneratedFilePath());
@@ -36,13 +36,13 @@ public class TempInvoiceCache {
     }
 
     // Store an object in the cache
-    public void put(TempInvoice invoice) {
+    public void put(Invoice invoice) {
         System.out.println("Put to cache - " + invoice.getInvoiceId());
         cache.put(invoice.getInvoiceId(), invoice);
     }
 
     // Retrieve an object from the cache
-    public TempInvoice get(UUID invoiceId) {
+    public Invoice get(UUID invoiceId) {
         return cache.getIfPresent(invoiceId);
     }
 
