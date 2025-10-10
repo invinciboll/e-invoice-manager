@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         String frontendPort = appConfig.getFrontendPort();
         String frontendHost = appConfig.getFrontendHost();
-        String frontendURL = "https://" + frontendHost;
+        String frontendURL = "http://" + frontendHost + ":" + frontendPort; //TODO: https no port for prod, else this
 
         logger.info("Frontend URL configured for CORS: {}", frontendURL);
 

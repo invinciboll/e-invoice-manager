@@ -26,6 +26,9 @@ public class AppConfig {
     @Value("${xsl.schema}")
     private String schemaXSL;
 
+    @Value("${validator.scenarios}")
+    private String validatorScenarios;
+
     // Output path
     @Value("${output.dir}")
     private String outputDir;

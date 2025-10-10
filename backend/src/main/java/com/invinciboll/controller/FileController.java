@@ -25,6 +25,7 @@ import com.invinciboll.service.cache.TempInvoiceCache;
 import com.invinciboll.service.xrechnung.XRechnungExtractor;
 import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
+import com.invinciboll.service.xrechnung.XRechnungValidator;
 
 @RestController
 public class FileController {
@@ -34,15 +35,17 @@ public class FileController {
     private final XRechnungExtractor extractor;
     private final XRechnungParser parser;
     private final XRechnungTransformer transformer;
+    private final XRechnungValidator validator;
 
     @Autowired
-    public FileController(TempInvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer) {
+    public FileController(TempInvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer, XRechnungValidator validator) {
         this.tempInvoiceCache = tempInvoiceCache;
         this.invoiceDao = invoiceDao;
         this.appConfig = appConfig;
         this.extractor = extractor;
         this.parser = parser;
         this.transformer = transformer;
+        this.validator = validator;
     }
 
     @PostMapping("/upload")
@@ -58,7 +61,7 @@ public class FileController {
                     .body("File format is invalid, must be PDF or XML.");
         }
 
-        TempInvoice temporaryInvoice = new TempInvoice(appConfig, extractor, parser, transformer);
+        TempInvoice temporaryInvoice = new TempInvoice(appConfig, extractor, parser, transformer, validator);
 
         try {
             temporaryInvoice.setFile(uploadedFile);

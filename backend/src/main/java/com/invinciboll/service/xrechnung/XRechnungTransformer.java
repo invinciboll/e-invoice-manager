@@ -29,7 +29,6 @@ public class XRechnungTransformer {
 
     public XdmNode xmlToXr(XdmNode inputXmlDoc, XMLFormat xmlFormat) throws SaxonApiException {
         String xslToXR;
-        System.out.println("Transforming XML to XR format: " );
         // Determine the appropriate XSLT based on XML format
         switch (xmlFormat) {
             case UBL_INVOICE:
@@ -48,8 +47,6 @@ public class XRechnungTransformer {
         // Compile the XSLT
         XsltCompiler compiler = processor.newXsltCompiler();
         XsltExecutable executable = compiler.compile(new StreamSource(xslToXR));
-
-        System.out.println("inputXmlDoc" + inputXmlDoc.toString());
 
         // Set up the transformer
         XsltTransformer transformer = executable.load();

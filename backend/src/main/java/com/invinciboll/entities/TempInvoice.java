@@ -24,11 +24,13 @@ import com.invinciboll.service.printing.NetworkPrinter;
 import com.invinciboll.service.xrechnung.XRechnungExtractor;
 import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
+import com.invinciboll.service.xrechnung.XRechnungValidator;
 import com.invinciboll.service.xrechnung.XRechnungVisualizer;
 import com.invinciboll.util.Utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
@@ -66,13 +68,15 @@ public class TempInvoice {
     private XRechnungExtractor extractor;
     private XRechnungParser parser;
     private XRechnungTransformer transformer;
+    private XRechnungValidator validator;
 
-    public TempInvoice(AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer) {
+    public TempInvoice(AppConfig appConfig, XRechnungExtractor extractor, XRechnungParser parser, XRechnungTransformer transformer, XRechnungValidator validator) {
         this.invoiceId = UUID.randomUUID();
         this.appConfig = appConfig;
         this.extractor = extractor;
         this.parser = parser;
         this.transformer = transformer;
+        this.validator = validator;
 
         String tempfiles = appConfig.getTempfilesDir();
         tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
@@ -129,13 +133,18 @@ public class TempInvoice {
         // Validate the XML
         // Collect Validation Warnings and Errors
         // Return them to the Frontend, also Save them in the DB together with the Invoice
+        try {
+            boolean isAcceptable= validator.validate(xmlContent, "Test");
+            if (!isAcceptable) {
+                return; // TODO: User feedback, Stop processing if not acceptable
+            }
+        } catch (Exception e) {
+            throw new ParserException("XML Validation failed, see log for details." + e.getMessage(), e);
+        }
 
         try {
-            System.out.println("Starting Transformation...");
             xrContent = transformer.xmlToXr(xmlContent, xmlFormat);
-            System.out.println("XR Content generated.");
             foContent = transformer.xrToFo(xrContent);
-            System.out.println("FO Content generated.");
         } catch (SaxonApiException e) {
             throw new TransformationException("Error transforming to intermediate representation: " + e.getMessage(), e);
         }
@@ -144,7 +153,6 @@ public class TempInvoice {
         tempGeneratedFilePath = tempFilesPath.resolve(tempGenerateFileName);
         try {
             XRechnungVisualizer.renderPDF(foContent, tempGeneratedFilePath.toString());
-            System.out.println("PDF Content generated.");
         } catch (IOException | SaxonApiException | FOPException e) {
             throw new TransformationException("Error rendering output PDF file: " + e.getMessage(),  e);
         }
@@ -158,7 +166,7 @@ public class TempInvoice {
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao) {
         Map<String, Object> response = new HashMap<>();
-        String fileUrl = "https://" + appConfig.getBackendHost() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName;
+        String fileUrl = "http://" + appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + appConfig.getTempfilesDir() + "/" + tempGenerateFileName; // TODO: Secure context switch
         response.put("fileUrl", fileUrl);
         response.put("invoiceId", invoiceId);
         response.put("fileFormat", fileFormat.toString());
