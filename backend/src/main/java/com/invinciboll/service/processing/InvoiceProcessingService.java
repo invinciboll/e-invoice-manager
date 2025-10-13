@@ -20,7 +20,7 @@ import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
 import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.exceptions.TransformationException;
-import com.invinciboll.service.cache.TempInvoiceCache;
+import com.invinciboll.service.cache.InvoiceCache;
 import com.invinciboll.service.xrechnung.XRechnungExtractor;
 import com.invinciboll.service.xrechnung.XRechnungParser;
 import com.invinciboll.service.xrechnung.XRechnungTransformer;
@@ -47,7 +47,7 @@ public class InvoiceProcessingService {
             XRechnungParser parser,
             XRechnungTransformer transformer,
             XRechnungValidator validator,
-            TempInvoiceCache cache,
+            InvoiceCache cache,
             XRechnungVisualizer visualizer,
             FileService fileService) {
         this.appConfig = appConfig;
@@ -135,7 +135,7 @@ public class InvoiceProcessingService {
 
     public Map<String, Object> prepareJSONResponse(InvoiceDao invoiceDao, Invoice invoice) {
         Map<String, Object> response = new HashMap<>();
-        String fileUrl = "http://" + appConfig.getBackendHost() + ":" + appConfig.getBackendPort() + "/" + appConfig.getTempfilesDir() + "/" + invoice.getTempGeneratedFileName(); // TODO: Secure context switch
+        String fileUrl = appConfig.getBackendUrl() + "/" + appConfig.getTempfilesDir() + "/" + invoice.getTempGeneratedFileName();
         response.put("fileUrl", fileUrl);
         response.put("invoiceId", invoice.getInvoiceId());
         response.put("fileFormat", invoice.getFileFormat().toString());

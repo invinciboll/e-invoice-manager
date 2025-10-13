@@ -51,17 +51,11 @@ public class AppConfig {
     @Value("${language}")
     private String language;
 
-    @Value("${frontend.host}")
-    private String frontendHost;
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
-    @Value("${frontend.port}")
-    private String frontendPort;
-
-    @Value("${server.host}")
-    private String backendHost;
-
-    @Value("${server.port}")
-    private String backendPort;
+    @Value("${backend.url}")
+    private String backendUrl;
 
     @Value("${printer.ip}")
     private String printerIp;

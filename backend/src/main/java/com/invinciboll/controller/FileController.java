@@ -20,19 +20,19 @@ import com.invinciboll.enums.FileFormat;
 import com.invinciboll.exceptions.CauseRetriever;
 import com.invinciboll.exceptions.ParserException;
 import com.invinciboll.exceptions.TransformationException;
-import com.invinciboll.service.cache.TempInvoiceCache;
+import com.invinciboll.service.cache.InvoiceCache;
 import com.invinciboll.service.processing.FileService;
 import com.invinciboll.service.processing.InvoiceProcessingService;
 
 @RestController
 public class FileController {
-    private final TempInvoiceCache tempInvoiceCache;
+    private final InvoiceCache tempInvoiceCache;
     private final InvoiceDao invoiceDao;
     private final InvoiceProcessingService invoiceProcessingService;
     private final FileService fileService;
 
     @Autowired
-    public FileController(TempInvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, InvoiceProcessingService invoiceProcessingService, FileService fileService) {
+    public FileController(InvoiceCache tempInvoiceCache, InvoiceDao invoiceDao, InvoiceProcessingService invoiceProcessingService, FileService fileService) {
         this.tempInvoiceCache = tempInvoiceCache;
         this.invoiceDao = invoiceDao;
         this.invoiceProcessingService = invoiceProcessingService;

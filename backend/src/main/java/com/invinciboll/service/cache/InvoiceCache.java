@@ -14,11 +14,11 @@ import com.github.benmanes.caffeine.cache.RemovalListener;
 import com.invinciboll.entities.Invoice;
 
 @Component
-public class TempInvoiceCache {
+public class InvoiceCache {
 
     private final Cache<UUID, Invoice> cache;
 
-    public TempInvoiceCache() {
+    public InvoiceCache() {
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(24, TimeUnit.HOURS) // Set expiration time
                 .maximumSize(50)                     // Set max cache size
