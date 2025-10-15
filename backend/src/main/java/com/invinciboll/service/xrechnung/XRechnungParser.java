@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.invinciboll.entities.KeyInformation;
-import com.invinciboll.exceptions.ParserException;
+import com.invinciboll.exceptions.runtime.ParserException;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -31,9 +31,8 @@ public class XRechnungParser {
      *
      * @param xrContent The XdmNode representing the XRechnung XR content.
      * @return A KeyInformation object containing extracted details.
-     * @throws ParserException If any parsing or extraction error occurs.
      */
-    public KeyInformation extractKeyInformation(XdmNode xrContent) throws ParserException {
+    public KeyInformation extractKeyInformation(XdmNode xrContent) {
         XPathCompiler xpathCompiler = processor.newXPathCompiler();
 
         // Declare namespaces
@@ -59,11 +58,6 @@ public class XRechnungParser {
             issuedDate = extractLocalDateValue(xpathCompiler, xrContent, issuedDateXPath);
             totalSum = extractBigDecimalValue(xpathCompiler, xrContent, totalSumXPath);
         } catch (ParserException e) {
-            // Log the error for debugging
-            System.err.println("Error extracting key information: " + e.getMessage());
-            e.printStackTrace();
-
-            // Optionally rethrow with additional context
             throw new ParserException("Error in extractKeyInformation: Unable to parse key details", e);
         }
 
@@ -73,7 +67,7 @@ public class XRechnungParser {
     }
 
 
-    public String extractStringValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+    public String extractStringValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) {
         try {
             XdmValue result = xpathCompiler.evaluate(expression, xrContent);
             return result.size() > 0 ? result.itemAt(0).getStringValue() : null;
@@ -82,7 +76,7 @@ public class XRechnungParser {
         }
     }
 
-    public Integer extractIntegerValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+    public Integer extractIntegerValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) {
         try {
             String value = extractStringValue(xpathCompiler, xrContent, expression);
             return value != null && !value.isEmpty() ? Integer.parseInt(value) : Integer.MIN_VALUE;
@@ -91,7 +85,7 @@ public class XRechnungParser {
         }
     }
 
-    public LocalDate extractLocalDateValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+    public LocalDate extractLocalDateValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) {
         try {
             String value = extractStringValue(xpathCompiler, xrContent, expression);
             return value != null && !value.isEmpty() ? LocalDate.parse(value) : LocalDate.MIN;
@@ -100,7 +94,7 @@ public class XRechnungParser {
         }
     }
 
-    public BigDecimal extractBigDecimalValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) throws ParserException {
+    public BigDecimal extractBigDecimalValue(XPathCompiler xpathCompiler, XdmNode xrContent, String expression) {
         try {
             String value = extractStringValue(xpathCompiler, xrContent, expression);
             return value != null && !value.isEmpty() ? new BigDecimal(value) : BigDecimal.valueOf(-1);

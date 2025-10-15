@@ -1,10 +1,11 @@
 package com.invinciboll.configuration;
 
+import java.time.Year;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
-import java.time.Year;
 
 @Getter
 @Component
@@ -26,8 +27,11 @@ public class AppConfig {
     @Value("${xsl.schema}")
     private String schemaXSL;
 
-    @Value("${validator.scenarios}")
-    private String validatorScenarios;
+    @Value("${validator.scenarios.xrechnung}")
+    private String validatorScenariosXrechnung;
+
+    @Value("${validator.scenarios.zugferd}")
+    private String validatorScenariosZugferd;
 
     // Output path
     @Value("${output.dir}")

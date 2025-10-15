@@ -7,19 +7,17 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.fop.apps.FOPException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.database.InvoiceDao;
+import com.invinciboll.entities.Invoice;
 import com.invinciboll.entities.InvoiceEntity;
 import com.invinciboll.entities.KeyInformation;
-import com.invinciboll.entities.Invoice;
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
-import com.invinciboll.exceptions.ParserException;
-import com.invinciboll.exceptions.TransformationException;
+import com.invinciboll.exceptions.runtime.InvoiceProcessingException;
 import com.invinciboll.service.cache.InvoiceCache;
 import com.invinciboll.service.xrechnung.XRechnungExtractor;
 import com.invinciboll.service.xrechnung.XRechnungParser;
@@ -27,7 +25,6 @@ import com.invinciboll.service.xrechnung.XRechnungTransformer;
 import com.invinciboll.service.xrechnung.XRechnungValidator;
 import com.invinciboll.service.xrechnung.XRechnungVisualizer;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
 @Service
@@ -59,18 +56,26 @@ public class InvoiceProcessingService {
         this.fileService = fileService;
     }
 
-    public Invoice createNewInvoice(org.springframework.web.multipart.MultipartFile uploadedFile) throws IOException, IllegalStateException {
+    public Invoice createNewInvoice(org.springframework.web.multipart.MultipartFile uploadedFile) {
         String tempfiles = appConfig.getTempfilesDir();
         var tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
 
         Invoice invoice = new Invoice(uploadedFile, tempFilesPath);
-        fileService.transferFile(uploadedFile, invoice.getTempOriginalFilePath());
-        invoice.setFileHash(fileService.computeFileHash(invoice.getTempOriginalFilePath()));
+        try {
+            fileService.transferFile(uploadedFile, invoice.getTempOriginalFilePath());
+        } catch (IOException e) {
+            throw new InvoiceProcessingException("Unable to save uploaded file for further processing: " + e.getMessage(), e);
+        }
 
+        try {
+            invoice.setFileHash(fileService.computeFileHash(invoice.getTempOriginalFilePath()));
+        } catch (Exception e) {
+            throw new InvoiceProcessingException("Unable to compute mandatory file hash: " + e.getMessage(), e);
+        }
         return invoice;
     }
 
-    public void processInvoice(Invoice invoice) throws IOException, ParserException, TransformationException, IllegalArgumentException {
+    public void processInvoice(Invoice invoice) {
         FileFormat fileFormat = extractor.detectFileFormat(invoice.getTempOriginalFilePath());
         invoice.setFileFormat(fileFormat);
 
@@ -94,40 +99,20 @@ public class InvoiceProcessingService {
         invoice.setKeyInformation(new KeyInformation(null, null, null, null, null));
     }
 
-    private void processElectronicInvoice(Invoice invoice) throws ParserException, TransformationException {
-        XdmNode xmlContent;
-        XMLFormat xmlFormat;
-        try {
-            xmlContent = extractor.parseXmlContent(invoice.getTempOriginalFilePath(), invoice.getFileFormat());
-            xmlFormat = extractor.detectXmlFormat(xmlContent);
-            invoice.setXmlFormat(xmlFormat);
-        } catch (IOException | ParserException | IllegalArgumentException e) {
-            throw new ParserException("Error parsing XML content: " + e.getMessage(), e);
+    private void processElectronicInvoice(Invoice invoice) {
+        XdmNode xmlContent = extractor.parseXmlContent(invoice.getTempOriginalFilePath(), invoice.getFileFormat());
+        XMLFormat xmlFormat = extractor.detectXmlFormat(xmlContent);
+        invoice.setXmlFormat(xmlFormat);
+
+        boolean isAcceptable= validator.validate(xmlContent, invoice.getFileFormat(), invoice.getFileHash());
+        if (!isAcceptable) {
+            return; // TODO: User feedback, Stop processing if not acceptable
         }
 
-        try {
-            boolean isAcceptable= validator.validate(xmlContent, "Test");
-            if (!isAcceptable) {
-                return; // TODO: User feedback, Stop processing if not acceptable
-            }
-        } catch (Exception e) {
-            throw new ParserException("XML Validation failed, see log for details." + e.getMessage(), e);
-        }
+        XdmNode xrContent = transformer.xmlToXr(xmlContent, xmlFormat);
+        XdmNode foContent = transformer.xrToFo(xrContent);
 
-        XdmNode xrContent;
-        XdmNode foContent;
-        try {
-            xrContent = transformer.xmlToXr(xmlContent, xmlFormat);
-            foContent = transformer.xrToFo(xrContent);
-        } catch (SaxonApiException e) {
-            throw new TransformationException("Error transforming to intermediate representation: " + e.getMessage(), e);
-        }
-
-        try {
-            visualizer.renderPDF(foContent, invoice.getTempGeneratedFilePath().toString());
-        } catch (IOException | SaxonApiException | FOPException e) {
-            throw new TransformationException("Error rendering output PDF file: " + e.getMessage(),  e);
-        }
+        visualizer.renderPDF(foContent, invoice.getTempGeneratedFilePath().toString());
 
         KeyInformation keyInformation = parser.extractKeyInformation(xrContent);
         invoice.setKeyInformation(keyInformation);
@@ -149,7 +134,7 @@ public class InvoiceProcessingService {
         return invoiceDao.existsByFileHash(invoice.getFileHash());
     }
 
-    public void persist(InvoiceDao invoiceDao, Invoice invoice) throws IOException{
+    public void persist(InvoiceDao invoiceDao, Invoice invoice) {
         String outputDir = appConfig.getOutputDir();
         Path dirPath = Path.of(outputDir, invoice.getKeyInformation().sellerName());
 
@@ -176,7 +161,7 @@ public class InvoiceProcessingService {
                 Files.copy(invoice.getTempGeneratedFilePath(), generatedFileOutputPath);
             }
         } catch (IOException e) {
-            throw new IOException("Error copying temp files to output directory: " + e.getMessage(), e);
+            throw new InvoiceProcessingException("Error copying original and generated invoice files to output directory: " + e.getMessage(), e);
         }
 
         InvoiceEntity invoiceEntity = new InvoiceEntity(invoice, originalFileOutputPath, generatedFileOutputPath);

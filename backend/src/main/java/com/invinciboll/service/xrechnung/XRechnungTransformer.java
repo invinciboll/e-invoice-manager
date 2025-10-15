@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.invinciboll.configuration.AppConfig;
 import com.invinciboll.enums.XMLFormat;
+import com.invinciboll.exceptions.runtime.TransformerException;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -15,6 +16,8 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+
+//TODO: Dont convert xsl everytime
 
 @Component
 public class XRechnungTransformer {
@@ -27,7 +30,7 @@ public class XRechnungTransformer {
         this.processor = injectedProcessor;
     }
 
-    public XdmNode xmlToXr(XdmNode inputXmlDoc, XMLFormat xmlFormat) throws SaxonApiException {
+    public XdmNode xmlToXr(XdmNode inputXmlDoc, XMLFormat xmlFormat) {
         String xslToXR;
         // Determine the appropriate XSLT based on XML format
         switch (xmlFormat) {
@@ -46,7 +49,12 @@ public class XRechnungTransformer {
 
         // Compile the XSLT
         XsltCompiler compiler = processor.newXsltCompiler();
-        XsltExecutable executable = compiler.compile(new StreamSource(xslToXR));
+        XsltExecutable executable;
+        try {
+            executable = compiler.compile(new StreamSource(xslToXR));
+        } catch (SaxonApiException e) {
+            throw new TransformerException("Failed to compile XSLT for format: " + xmlFormat, e);
+        }
 
         // Set up the transformer
         XsltTransformer transformer = executable.load();
@@ -55,17 +63,25 @@ public class XRechnungTransformer {
         // Set up the destination for the transformed result
         XdmDestination destination = new XdmDestination();
         transformer.setDestination(destination);
-        transformer.transform();
+        try {
+            transformer.transform();
+        } catch (SaxonApiException e) {
+            throw new TransformerException("Failed to transform XML to intermediate XR", e);
+        }
 
-        // Return the resulting XdmNode
         return destination.getXdmNode();
     }
 
 
-    public XdmNode xrToFo(XdmNode xrContent) throws SaxonApiException {
+    public XdmNode xrToFo(XdmNode xrContent) {
         String xslToFO = appConfig.getXrToFo();
         XsltCompiler compiler = processor.newXsltCompiler();
-        XsltExecutable executable = compiler.compile(new StreamSource(xslToFO));
+        XsltExecutable executable;
+        try {
+            executable = compiler.compile(new StreamSource(xslToFO));
+        } catch (SaxonApiException e) {
+            throw new TransformerException("Failed to compile XSLT for XR to FO transformation", e);
+        }
 
         XsltTransformer transformer = executable.load();
         transformer.setInitialContextNode(xrContent);
@@ -73,7 +89,11 @@ public class XRechnungTransformer {
         XdmDestination destination = new XdmDestination();
 
         transformer.setDestination(destination);
-        transformer.transform();
+        try {
+            transformer.transform();
+        } catch (SaxonApiException e) {
+            throw new TransformerException("Failed to transform XR to FO", e);
+        }
 
         return destination.getXdmNode();
     }

@@ -17,9 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.invinciboll.database.InvoiceDao;
 import com.invinciboll.entities.Invoice;
 import com.invinciboll.enums.FileFormat;
-import com.invinciboll.exceptions.CauseRetriever;
-import com.invinciboll.exceptions.ParserException;
-import com.invinciboll.exceptions.TransformationException;
 import com.invinciboll.service.cache.InvoiceCache;
 import com.invinciboll.service.processing.FileService;
 import com.invinciboll.service.processing.InvoiceProcessingService;
@@ -52,23 +49,10 @@ public class FileController {
                     .body("File format is invalid, must be PDF or XML.");
         }
 
-        Invoice tempInvoice;
-        try {
-           tempInvoice = invoiceProcessingService.createNewInvoice(uploadedFile);
-        } catch (IOException | IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving uploaded file: " + CauseRetriever.getRootCause(e));
-        }
-
-
-        try {
-            invoiceProcessingService.processInvoice(tempInvoice);
-        } catch (ParserException | IOException | TransformationException | IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error processing invoice: " + CauseRetriever.getRootCause(e));
-        }
-
+        Invoice tempInvoice = invoiceProcessingService.createNewInvoice(uploadedFile);
+        invoiceProcessingService.processInvoice(tempInvoice);
         tempInvoiceCache.put(tempInvoice);
+
         Map<String, Object> responseBody = invoiceProcessingService.prepareJSONResponse(invoiceDao, tempInvoice);
         return ResponseEntity.ok(responseBody);
     }
@@ -103,12 +87,7 @@ public class FileController {
             }
         }
 
-        try {
-            invoiceProcessingService.persist(invoiceDao, invoice);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to persist invoice: " + e.getMessage());
-        }
+        invoiceProcessingService.persist(invoiceDao, invoice);
 
         return ResponseEntity.ok().build();
     }

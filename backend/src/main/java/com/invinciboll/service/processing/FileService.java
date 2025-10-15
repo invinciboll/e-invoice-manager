@@ -23,7 +23,7 @@ public class FileService {
 
         String tempfiles = appConfig.getTempfilesDir();
         var tempFilesPath = Paths.get(System.getProperty("user.dir"), tempfiles);
-        if (!Files.exists(tempFilesPath)) { //TODO: move this to app
+        if (!Files.exists(tempFilesPath)) {
             try {
                 Files.createDirectories(tempFilesPath);
             } catch (IOException e) {

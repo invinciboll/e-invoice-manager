@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.invinciboll.enums.FileFormat;
 import com.invinciboll.enums.XMLFormat;
-import com.invinciboll.exceptions.ParserException;
+import com.invinciboll.exceptions.runtime.ExtractorException;
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -31,6 +31,8 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
+
+//TODO: Wording and processing flow can be improved.
 
 /**
  * Detects file format and XML format of invoices.
@@ -53,15 +55,14 @@ public class XRechnungExtractor {
      *
      * @param inputFile Path to the input file.
      * @return Detected FileFormat (XML, ZF_PDF, PDF, or INVALID).
-     * @throws IOException If an I/O error occurs while reading the file.
      */
-    public FileFormat detectFileFormat(Path inputFile) throws IOException {
+    public FileFormat detectFileFormat(Path inputFile) {
         String filePath = inputFile.toString();
         byte[] header = new byte[4];
         try (FileInputStream fis = new FileInputStream(filePath)) {
             fis.read(header, 0, 4);
         } catch (IOException e) {
-            throw new IOException("Error reading file header: " + e.getMessage());
+            throw new ExtractorException("Failed to read file header from: " + filePath.toString(), e);
         }
 
         if (isXML(header)) {
@@ -132,7 +133,7 @@ public class XRechnungExtractor {
                 }
             }
         } catch (IOException e) {
-            // log, but don’t throw; non-ZF PDFs may not load cleanly
+            throw new ExtractorException("PDF was not loaded correctly, unable to check for embedded XML: " + pdfPath, e);
         }
         return false;
     }
@@ -186,21 +187,20 @@ public class XRechnungExtractor {
      *
      * @param pdfPath Path to the PDF file.
      * @return Extracted XML content as a String.
-     * @throws IOException If an I/O error occurs while reading the PDF or if no embedded XML is found.
      */
-    private String extractEmbeddedXmlFromPdf(Path pdfPath) throws IOException {
+    private String extractEmbeddedXmlFromPdf(Path pdfPath) {
         try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
 
             PDDocumentNameDictionary names = new PDDocumentNameDictionary(document.getDocumentCatalog());
             PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
 
             if (embeddedFiles == null) {
-                throw new IOException("No embedded files found in PDF: " + pdfPath);
+                throw new ExtractorException("No embedded files found in PDF: " + pdfPath.toString());
             }
 
             Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
             if (embeddedFileNames == null || embeddedFileNames.isEmpty()) {
-                throw new IOException("No named embedded files found in PDF: " + pdfPath);
+                throw new ExtractorException("No named embedded files found in PDF: " + pdfPath.toString());
             }
 
             for (Map.Entry<String, PDComplexFileSpecification> entry : embeddedFileNames.entrySet()) {
@@ -219,7 +219,9 @@ public class XRechnungExtractor {
                 }
             }
 
-            throw new IOException("No embedded XML file found in PDF: " + pdfPath);
+            throw new ExtractorException("No embedded XML file found in PDF: " + pdfPath.toString());
+        } catch (IOException e) {
+            throw new ExtractorException("Failed to extract embedded XML from PDF: " + pdfPath.toString(), e);
         }
     }
 
@@ -230,13 +232,10 @@ public class XRechnungExtractor {
      * @param inputPath Path to the input file (PDF or XML).
      * @param fileFormat Detected FileFormat of the input file.
      * @return Parsed XML document as XdmNode.
-     * @throws IllegalArgumentException If the provided file format is unsupported.
-     * @throws IOException If an I/O error occurs while reading the file or extracting XML.
-     * @throws ParserException If an error occurs while parsing the XML content.
      */
-    public XdmNode parseXmlContent(Path inputPath, FileFormat fileFormat) throws IllegalArgumentException, IOException, ParserException {
+    public XdmNode parseXmlContent(Path inputPath, FileFormat fileFormat) {
         if (fileFormat != FileFormat.ZF_PDF && fileFormat != FileFormat.XML) {
-            throw new IllegalArgumentException("Unsupported file format: " + fileFormat);
+            throw new ExtractorException("Unsupported file format. Can not extract XML content from File: " + inputPath.toString());
         }
 
         String xmlContentString;
@@ -247,16 +246,15 @@ public class XRechnungExtractor {
             try{
                 xmlContentString = Files.readString(inputPath, StandardCharsets.UTF_8); // Read XML from file
             } catch (IOException e) {
-                throw new IOException("Unable to read XML content from XML file", e);
+                throw new ExtractorException("Unable to read XML content from XML file: " + inputPath.toString(), e);
             }
         }
 
         DocumentBuilder builder = processor.newDocumentBuilder();
         try {
-            // Parse the XML content string into an XdmNode
             return builder.build(new StreamSource(new StringReader(xmlContentString)));
         } catch (SaxonApiException e) {
-            throw new ParserException("Unable to parse XML content", e);
+            throw new ExtractorException("Unable to create Saxon document from XML content: ", e);
         }
     }
 }
