@@ -89,7 +89,7 @@ public class InvoiceProcessingService {
                 break;
             case INVALID:
             default:
-                throw new IllegalArgumentException("File can not be interpreted as valid PDF or XML, format is: " + fileFormat);
+                throw new InvoiceProcessingException("File can not be interpreted as valid PDF or XML, format is: " + fileFormat);
         }
     }
 
@@ -110,9 +110,11 @@ public class InvoiceProcessingService {
         }
 
         XdmNode xrContent = transformer.xmlToXr(xmlContent, xmlFormat);
-        XdmNode foContent = transformer.xrToFo(xrContent);
 
-        visualizer.renderPDF(foContent, invoice.getTempGeneratedFilePath().toString());
+        if (invoice.getFileFormat() == FileFormat.XML) { // Convert XRechnung XML to PDF, we leave ZF_PDF as is
+            XdmNode foContent = transformer.xrToFo(xrContent);
+            visualizer.renderPDF(foContent, invoice.getTempGeneratedFilePath().toString());
+        }
 
         KeyInformation keyInformation = parser.extractKeyInformation(xrContent);
         invoice.setKeyInformation(keyInformation);
